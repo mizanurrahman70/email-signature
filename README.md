@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Email Signature Generator
 
-## Getting Started
+A free web tool: enter your details, pick a template, customize colors and fonts, upload a photo/logo, and copy a ready-made signature into Gmail, Outlook, or Apple Mail.
 
-First, run the development server:
+Built with Next.js 16 (App Router), React 19, Tailwind CSS 4, and Cloudinary for image hosting.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # add your Cloudinary credentials
+npm install
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Script              | Purpose                    |
+| ------------------- | -------------------------- |
+| `npm run dev`       | Development server         |
+| `npm run build`     | Production build           |
+| `npm test`          | Unit tests (Vitest)        |
+| `npm run typecheck` | TypeScript check           |
+| `npm run lint`      | ESLint                     |
+| `npm run icons`     | Regenerate social icon PNGs |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Without Cloudinary credentials the app still works: uploads show an error, and users can paste an image URL instead.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How it works
 
-## Learn More
+```
+src/
+├── app/                    # Routes only
+│   ├── page.tsx            #   Static page; editor inside <Suspense>
+│   └── api/upload-signature/route.ts
+├── components/             # React UI, grouped by feature
+│   ├── editor/             #   Forms, context, browser-only editor root
+│   ├── preview/            #   Live preview + copy buttons
+│   ├── install/            #   Gmail / Outlook / Apple Mail steps
+│   └── ui/                 #   Button, TextField, Tabs, Card
+├── hooks/                  # React hooks (persistence, copy status, upload)
+├── constants/              # Static data and config, no logic
+│   ├── signature-options.ts  # fonts, colors, templates, form fields
+│   ├── signature-defaults.ts
+│   ├── install-guides.ts
+│   ├── cloudinary.ts       #   limits, folder, delivery transforms
+│   ├── copy-status.ts
+│   └── storage.ts
+├── types/                  # Shared TypeScript types only
+├── utils/                  # Pure, framework-free helpers (+ tests)
+│   ├── html.ts  url.ts  color.ts  file.ts  error.ts  keyboard.ts  cn.ts
+│   ├── http.ts             #   fetchJson with readable errors
+│   ├── cloudinary.ts       #   URL/form/signature-string builders
+│   └── clipboard.ts  storage.ts   # safe browser API wrappers
+├── services/               # I/O with outside systems
+│   ├── cloudinary-upload.ts  # browser → Cloudinary
+│   └── cloudinary-signing.ts # server-only signing
+└── lib/signature/          # Domain logic
+    ├── view-model.ts       #   sanitize + normalize input
+    ├── render.ts  copy.ts  reducer.ts  schema.ts
+    └── templates/          #   classic, stacked + shared email-safe parts
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Rules of thumb:** components render and call functions; data lives in `constants/`; types in `types/`; reusable logic in `utils/` (pure) or `services/` (network/server). Everything imports with `@/…`, and there are no barrel `index.ts` files, so the bundler only pulls in what's used.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **One rendering path.** `renderSignatureHtml()` produces the email HTML; the preview renders that same string, so what you see is what gets copied.
+- **Safe by construction.** All user input goes through `buildViewModel()`, which escapes text, allows only `http(s)` links and `https` images, and validates colors and fonts. Templates never touch raw input.
+- **Email-client compatible.** Table layout, inline styles, explicit image sizes, email-safe fonts, brand-colored social icons as hosted PNGs (Gmail and Outlook don't render SVG), and PNG images with the photo rounded by Cloudinary (`r_max`), since Outlook ignores `border-radius`.
+- **Suspense + `use`.** The editor restores the draft from `localStorage`, so it calls `use(browser())` and the server prerenders the `<EditorSkeleton />` fallback. The rest of the page (header, install guides) is static and indexable. Context is read with `use(SignatureContext)`.
+- **Responsive typing.** The preview renders from `useDeferredValue(state)`; uploads run in `useTransition`.
+- **Persistence.** The draft is saved to `localStorage` (debounced) and validated with Zod when it's restored. Corrupt fields fall back one by one.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Social icons
 
-## Deploy on Vercel
+`public/social-icons/*.png` are generated by [scripts/generate-social-icons.mjs](scripts/generate-social-icons.mjs) from [simple-icons](https://simpleicons.org) paths (LinkedIn's mark is drawn in the script, because simple-icons removed it). They're 72px images displayed at 24px.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The signature links to them by absolute URL: `NEXT_PUBLIC_SITE_URL` when set, otherwise the current origin. Signatures copied from `localhost` will show broken icons to recipients, and the preview warns about this. Copy from the deployed site.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Cloudinary
+
+The browser uploads directly to Cloudinary using a short-lived signature from `/api/upload-signature`. The API secret never leaves the server. The signature locks the `folder` and `allowed_formats`.
+
+For production, also consider:
+- An **upload preset** with a max file size and incoming transformation (can be enforced in the Cloudinary console).
+- **Rate limiting** `/api/upload-signature` (for example with Vercel Firewall or Upstash), because the endpoint is public.
+
+## Deploying
+
+**Vercel:** import the repo and add the three `CLOUDINARY_*` environment variables. No other config is needed.
+
+**Netlify:** import the repo. Netlify detects Next.js automatically through its Next.js runtime. Add the same environment variables.
