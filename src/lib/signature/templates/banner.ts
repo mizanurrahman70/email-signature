@@ -2,6 +2,7 @@ import type { SignatureViewModel } from "@/types/signature";
 import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
   alignRight,
+  renderCustomFields,
   renderIconContacts,
   renderLogo,
   renderName,
@@ -38,7 +39,7 @@ export function renderBannerTemplate(vm: SignatureViewModel): string {
   )}</td></tr>`;
 
   const logo = renderLogo(vm, LOGO_WIDTH);
-  const details = joinHtml([renderIconContacts(vm), renderSocialIcons(vm)]);
+  const details = joinHtml([renderCustomFields(vm), renderIconContacts(vm), renderSocialIcons(vm)]);
   const logoCell = logo
     ? `<td align="right" style="${toInlineStyle({ verticalAlign: "bottom", paddingLeft: "20px" })}">${alignRight(logo)}</td>`
     : "";

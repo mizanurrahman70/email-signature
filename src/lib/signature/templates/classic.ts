@@ -1,6 +1,7 @@
 import type { SignatureViewModel } from "@/types/signature";
 import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
+  renderCustomFields,
   renderLabeledContacts,
   renderLogo,
   renderMutedText,
@@ -26,6 +27,7 @@ export function renderClassicTemplate(vm: SignatureViewModel): string {
   const details = joinHtml([
     renderName(vm),
     renderMutedText(vm, renderTitleLine(vm, " &middot; ")),
+    renderCustomFields(vm),
     vm.contacts.length > 0 && renderSpacer(8),
     renderLabeledContacts(vm),
     renderSocialIcons(vm),

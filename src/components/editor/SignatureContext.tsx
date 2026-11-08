@@ -2,6 +2,7 @@
 
 import { createContext, use, useMemo, type Dispatch, type ReactNode } from "react";
 import type {
+  CustomField,
   DetailField,
   ImageKind,
   SignatureAction,
@@ -9,12 +10,17 @@ import type {
   SignatureStyle,
   SocialNetwork,
 } from "@/types/signature";
+import { createId } from "@/utils/id";
 
 interface SignatureActions {
   updateDetail: (field: DetailField, value: string) => void;
   updateSocial: (network: SocialNetwork, value: string) => void;
   setImage: (kind: ImageKind, url: string) => void;
   updateStyle: (style: Partial<SignatureStyle>) => void;
+  updateLegal: (value: string) => void;
+  addCustomField: () => void;
+  updateCustomField: (id: string, patch: Partial<Omit<CustomField, "id">>) => void;
+  removeCustomField: (id: string) => void;
   reset: () => void;
 }
 
@@ -38,6 +44,11 @@ export function SignatureProvider({ state, dispatch, children }: SignatureProvid
       updateSocial: (network, value) => dispatch({ type: "updateSocial", network, value }),
       setImage: (kind, url) => dispatch({ type: "setImage", kind, url }),
       updateStyle: (style) => dispatch({ type: "updateStyle", style }),
+      updateLegal: (value) => dispatch({ type: "updateLegal", value }),
+      // Ids are created here, not in the reducer, so the reducer stays pure.
+      addCustomField: () => dispatch({ type: "addCustomField", id: createId() }),
+      updateCustomField: (id, patch) => dispatch({ type: "updateCustomField", id, patch }),
+      removeCustomField: (id) => dispatch({ type: "removeCustomField", id }),
       reset: () => dispatch({ type: "reset" }),
     }),
     [dispatch],

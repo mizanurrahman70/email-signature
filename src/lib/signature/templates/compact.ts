@@ -2,6 +2,7 @@ import type { SignatureViewModel } from "@/types/signature";
 import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
   renderAddress,
+  renderCustomFields,
   renderInlineContacts,
   renderName,
   renderPhoto,
@@ -27,6 +28,7 @@ export function renderCompactTemplate(vm: SignatureViewModel): string {
 
   const content = joinHtml([
     nameLine,
+    renderCustomFields(vm),
     renderText(renderInlineContacts(vm, "&middot;"), { fontSize: "12px", marginTop: "4px" }),
     renderAddress(vm),
     renderSocialIcons(vm),

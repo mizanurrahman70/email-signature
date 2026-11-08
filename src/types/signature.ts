@@ -33,11 +33,25 @@ export interface SignatureStyle {
 
 export type ColorField = "primaryColor" | "textColor";
 
+/** A user-defined "Label: value" line shown in the signature footer. */
+export interface CustomField {
+  id: string;
+  label: string;
+  value: string;
+}
+
+export interface SignatureFooter {
+  /** Disclaimer / confidentiality notice, shown in small print. */
+  legal: string;
+  customFields: CustomField[];
+}
+
 export interface SignatureState {
   details: SignatureDetails;
   social: SocialLinks;
   images: SignatureImages;
   style: SignatureStyle;
+  footer: SignatureFooter;
 }
 
 export type SignatureAction =
@@ -45,6 +59,10 @@ export type SignatureAction =
   | { type: "updateSocial"; network: SocialNetwork; value: string }
   | { type: "setImage"; kind: ImageKind; url: string }
   | { type: "updateStyle"; style: Partial<SignatureStyle> }
+  | { type: "updateLegal"; value: string }
+  | { type: "addCustomField"; id: string }
+  | { type: "updateCustomField"; id: string; patch: Partial<Omit<CustomField, "id">> }
+  | { type: "removeCustomField"; id: string }
   | { type: "reset" };
 
 export interface ContactLink {
@@ -96,4 +114,18 @@ export interface SignatureViewModel {
   textColor: string;
   mutedColor: string;
   fontFamily: string;
+  /** Shown directly under name / title / company. */
+  customFields: CustomFieldLine[];
+  footer: FooterViewModel;
+}
+
+/** An escaped "Label: value" line; the value may be a link. */
+export interface CustomFieldLine {
+  label: string;
+  valueHtml: string;
+}
+
+export interface FooterViewModel {
+  /** Escaped legal text with line breaks as <br>. */
+  legalHtml: string;
 }

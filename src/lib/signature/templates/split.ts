@@ -1,6 +1,7 @@
 import type { SignatureViewModel } from "@/types/signature";
 import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
+  renderCustomFields,
   renderIconContacts,
   renderLogo,
   renderMutedText,
@@ -31,6 +32,7 @@ export function renderSplitTemplate(vm: SignatureViewModel): string {
     renderText(vm.jobTitle, { fontSize: "14px", marginTop: "4px" }),
     renderText(joinHtml([vm.department, vm.company], " | "), { fontSize: "14px" }),
     renderMutedText(vm, vm.pronouns),
+    renderCustomFields(vm),
   ]);
   const identityCell = `<td style="${toInlineStyle({ verticalAlign: "middle", paddingRight: "20px", whiteSpace: "nowrap" })}">${identity}</td>`;
 

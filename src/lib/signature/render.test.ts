@@ -13,6 +13,7 @@ function withState(overrides: Partial<{ [K in keyof SignatureState]: Partial<Sig
     social: { ...DEFAULT_SIGNATURE.social, ...overrides.social },
     images: { ...DEFAULT_SIGNATURE.images, ...overrides.images },
     style: { ...DEFAULT_SIGNATURE.style, ...overrides.style },
+    footer: { ...DEFAULT_SIGNATURE.footer, ...overrides.footer },
   };
 }
 
@@ -188,5 +189,65 @@ describe("parseSignatureState", () => {
     expect(state.details.fullName).toBe("Sam Lee");
     expect(state.style.templateId).toBe(DEFAULT_SIGNATURE.style.templateId);
     expect(state.style.primaryColor).toBe("#000000");
+  });
+});
+
+describe("email signature footer", () => {
+  const footerState = (templateId: SignatureState["style"]["templateId"] = "split") =>
+    withState({
+      style: { templateId },
+      footer: {
+        legal: "Confidential <b>notice</b>\nLine two",
+        customFields: [
+          { id: "1", label: "Booking", value: "https://calendly.com/jane" },
+          { id: "2", label: "Skype", value: "jane.cooper" },
+          { id: "3", label: "Assistant", value: "sam@acme.com" },
+          { id: "4", label: "Empty", value: "   " },
+        ],
+      },
+    });
+
+  it.each(TEMPLATE_IDS)("puts custom fields under name/title/company and legal text last in %s", (templateId) => {
+    const html = renderSignatureHtml(footerState(templateId), OPTIONS);
+
+    expect(html).toContain("Booking:</span>");
+    expect(html).toContain('href="https://calendly.com/jane"');
+    expect(html).toContain("jane.cooper");
+    expect(html).toContain('href="mailto:sam@acme.com"');
+    expect(html).not.toContain("Empty:");
+    expect(html).toContain("Confidential &lt;b&gt;notice&lt;/b&gt;<br>Line two");
+
+    // Order: identity → custom fields → contact details → legal notice.
+    const name = html.indexOf("Jane Cooper");
+    const company = html.indexOf("Acme Inc.");
+    const customField = html.indexOf("Booking:");
+    const phone = html.indexOf('href="tel:');
+    const legal = html.indexOf("Confidential &lt;b&gt;");
+    expect(name).toBeLessThan(customField);
+    expect(company).toBeLessThan(customField);
+    expect(customField).toBeLessThan(phone);
+    expect(phone).toBeLessThan(legal);
+  });
+
+  it("leaves the template untouched when the footer is empty", () => {
+    const html = renderSignatureHtml(withState({}), OPTIONS);
+    expect(html).not.toContain("border-top:1px solid #e5e7eb;max-width");
+    expect(html.startsWith("<table")).toBe(true);
+  });
+
+  it("adds custom fields under the title and legal text at the end of the plain-text version", () => {
+    const text = renderSignatureText(footerState());
+    expect(text).toContain("Head of Marketing, Marketing, Acme Inc.\nBooking: https://calendly.com/jane\nSkype: jane.cooper");
+    expect(text.indexOf("Booking:")).toBeLessThan(text.indexOf("+1 555 010 2030"));
+    expect(text.endsWith("\n\nConfidential <b>notice</b>\nLine two")).toBe(true);
+  });
+
+  it("restores old drafts without a footer, and repairs a bad one", () => {
+    const { footer: _omit, ...withoutFooter } = DEFAULT_SIGNATURE;
+    void _omit;
+    expect(parseSignatureState(JSON.stringify(withoutFooter)).footer).toEqual(DEFAULT_SIGNATURE.footer);
+    expect(
+      parseSignatureState(JSON.stringify({ ...DEFAULT_SIGNATURE, footer: { legal: 42, customFields: "nope" } })).footer,
+    ).toEqual({ legal: "", customFields: [] });
   });
 });

@@ -98,6 +98,19 @@ export function renderTitleLine(vm: SignatureViewModel, separator: string): stri
   return joinHtml([vm.jobTitle, vm.department, vm.company], separator);
 }
 
+/** Custom "Label: value" lines, placed directly under name / title / company. */
+export function renderCustomFields(vm: SignatureViewModel): string {
+  if (vm.customFields.length === 0) return "";
+
+  const labelStyle = toInlineStyle({ color: vm.primaryColor, fontWeight: "bold" });
+  const lines = vm.customFields
+    .map(({ label, valueHtml }) =>
+      renderText(label ? `<span style="${labelStyle}">${label}:</span>&nbsp;${valueHtml}` : valueHtml, { fontSize: "13px" }),
+    )
+    .join("");
+  return `<div style="margin-top:4px">${lines}</div>`;
+}
+
 export function renderMutedText(vm: SignatureViewModel, html: string): string {
   return renderText(html, { fontSize: "13px", color: vm.mutedColor });
 }

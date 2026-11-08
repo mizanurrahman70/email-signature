@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { DEFAULT_SIGNATURE } from "@/constants/signature-defaults";
-import { IMAGE_KINDS, SOCIAL_NETWORKS, TEMPLATE_IDS } from "@/constants/signature-options";
+import {
+  IMAGE_KINDS,
+  MAX_CUSTOM_FIELDS,
+  MAX_LEGAL_LENGTH,
+  SOCIAL_NETWORKS,
+  TEMPLATE_IDS,
+} from "@/constants/signature-options";
 import type { SignatureState } from "@/types/signature";
 import { isHexColor } from "@/utils/color";
 
@@ -41,6 +47,16 @@ const signatureSchema = z.object({
       fontFamily: z.string().catch(DEFAULT_SIGNATURE.style.fontFamily),
     })
     .catch(DEFAULT_SIGNATURE.style),
+  // Drafts saved before the footer existed have no `footer`; they get the empty default.
+  footer: z
+    .object({
+      legal: z.string().max(MAX_LEGAL_LENGTH).catch(""),
+      customFields: z
+        .array(z.object({ id: z.string().min(1), label: text, value: text }))
+        .max(MAX_CUSTOM_FIELDS)
+        .catch([]),
+    })
+    .catch(DEFAULT_SIGNATURE.footer),
 });
 
 export function parseSignatureState(raw: string | null): SignatureState {

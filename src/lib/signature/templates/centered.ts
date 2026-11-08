@@ -3,6 +3,7 @@ import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
   centerBlock,
   renderAddress,
+  renderCustomFields,
   renderInlineContacts,
   renderLogo,
   renderMutedText,
@@ -28,6 +29,7 @@ export function renderCenteredTemplate(vm: SignatureViewModel): string {
     photo && `${centerBlock(photo)}${renderSpacer(10)}`,
     renderName(vm, { color: vm.primaryColor }),
     renderMutedText(vm, renderTitleLine(vm, " &middot; ")),
+    renderCustomFields(vm),
     renderText(renderInlineContacts(vm, "&middot;"), { fontSize: "13px", marginTop: "8px" }),
     renderAddress(vm),
     renderSocialIcons(vm, "center"),

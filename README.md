@@ -95,6 +95,13 @@ The live preview renders in a sandboxed iframe so the app's CSS can't affect it,
 
 `GET /api/icons/{phone|email|website|address}?color=rrggbb` returns the icon as a PNG in the accent color, rendered with `sharp` and cached for a year. Email clients don't render SVG, and pre-made PNGs couldn't follow a custom color.
 
+## Custom fields and email signature footer
+
+The Details step mirrors the signature's order: About you → **Custom fields** → How to reach you → **Email signature footer**.
+
+- **Custom fields:** up to 5 "Label: value" rows, shown in every template directly under name / title / company ([renderCustomFields](src/lib/signature/templates/parts.ts)). Values that are emails or web addresses become links. In Banner they open the white area just below the accent bar, where links stay readable.
+- **Legal content:** a disclaimer or confidentiality notice (up to 1000 characters, with an "Insert standard disclaimer" shortcut). It's rendered once in `render.ts` ([templates/footer.ts](src/lib/signature/templates/footer.ts)) below whichever template is selected, in small print under a thin rule, with line breaks kept.
+
 ## Handwritten signatures
 
 The **Signature** image field has a "Create handwritten signature" option that opens a modal (native `<dialog>`):

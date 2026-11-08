@@ -2,6 +2,7 @@ import type { SignatureViewModel } from "@/types/signature";
 import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
   renderAddress,
+  renderCustomFields,
   renderInlineContacts,
   renderLogo,
   renderMutedText,
@@ -20,7 +21,11 @@ const LOGO_WIDTH = 140;
 export function renderStackedTemplate(vm: SignatureViewModel): string {
   const photo = renderPhoto(vm, PHOTO_SIZE);
   const photoCell = photo ? `<td style="${toInlineStyle({ verticalAlign: "middle", paddingRight: "12px" })}">${photo}</td>` : "";
-  const nameBlock = joinHtml([renderName(vm, { color: vm.primaryColor }), renderMutedText(vm, renderTitleLine(vm, " | "))]);
+  const nameBlock = joinHtml([
+    renderName(vm, { color: vm.primaryColor }),
+    renderMutedText(vm, renderTitleLine(vm, " | ")),
+    renderCustomFields(vm),
+  ]);
   const identity = renderTable(`<tr>${photoCell}<td style="vertical-align:middle">${nameBlock}</td></tr>`);
 
   const accentBarStyle = toInlineStyle({ height: "3px", lineHeight: "3px", fontSize: 0, backgroundColor: vm.primaryColor });

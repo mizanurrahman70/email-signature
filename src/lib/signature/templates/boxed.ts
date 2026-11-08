@@ -2,6 +2,7 @@ import type { SignatureViewModel } from "@/types/signature";
 import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
   alignRight,
+  renderCustomFields,
   renderIconContacts,
   renderLogo,
   renderMutedText,
@@ -25,6 +26,7 @@ export function renderBoxedTemplate(vm: SignatureViewModel): string {
   const details = joinHtml([
     renderName(vm, { color: vm.primaryColor }),
     renderMutedText(vm, renderTitleLine(vm, " | ")),
+    renderCustomFields(vm),
     vm.contacts.length > 0 && renderSpacer(8),
     renderIconContacts(vm),
   ]);

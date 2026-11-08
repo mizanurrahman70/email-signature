@@ -123,3 +123,9 @@ export const IMAGE_FIELDS: ReadonlyArray<{ kind: ImageKind; label: string; hint:
 /** Contact icons are rendered on demand in the accent color by /api/icons/[name]. */
 export const CONTACT_ICON_ENDPOINT = "/api/icons";
 export const CONTACT_ICON_SIZE = 16;
+
+/** Email signature footer limits and the "Insert standard disclaimer" text. */
+export const MAX_CUSTOM_FIELDS = 5;
+export const MAX_LEGAL_LENGTH = 1000;
+export const STANDARD_DISCLAIMER =
+  "This email and any attachments are confidential and intended solely for the addressee. If you received it in error, please notify the sender and delete it. Any unauthorized use, disclosure or copying is prohibited.";

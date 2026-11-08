@@ -12,21 +12,25 @@ import type {
   ContactIconName,
   ContactLine,
   ContactLink,
+  CustomField,
+  CustomFieldLine,
+  FooterViewModel,
   ImageKind,
   RenderOptions,
   SignatureDetails,
+  SignatureFooter,
   SignatureState,
   SignatureViewModel,
   SocialIcon,
 } from "@/types/signature";
 import { safeHexColor } from "@/utils/color";
 import { escapeHtml } from "@/utils/html";
-import { normalizeWebUrl, toAbsoluteUrl, toDisplayUrl, toMailtoHref, toTelHref } from "@/utils/url";
+import { isValidEmail, normalizeWebUrl, toAbsoluteUrl, toDisplayUrl, toMailtoHref, toTelHref } from "@/utils/url";
 
 const ALLOWED_FONTS = new Set<string>(FONT_OPTIONS.map((font) => font.value));
 
 export function buildViewModel(
-  { details, social, images, style }: SignatureState,
+  { details, social, images, style, footer }: SignatureState,
   { assetBaseUrl, showPlaceholders = false }: RenderOptions,
 ): SignatureViewModel {
   const fallbackStyle = DEFAULT_SIGNATURE.style;
@@ -47,7 +51,32 @@ export function buildViewModel(
     textColor: safeHexColor(style.textColor, fallbackStyle.textColor),
     mutedColor: MUTED_TEXT_COLOR,
     fontFamily: ALLOWED_FONTS.has(style.fontFamily) ? style.fontFamily : fallbackStyle.fontFamily,
+    customFields: buildCustomFields(footer.customFields, primaryColor),
+    footer: buildFooter(footer),
   };
+}
+
+function buildCustomFields(fields: CustomField[], linkColor: string): CustomFieldLine[] {
+  return fields
+    .filter((field) => field.value.trim())
+    .map((field) => ({ label: escapeText(field.label), valueHtml: renderFieldValue(field.value.trim(), linkColor) }));
+}
+
+function buildFooter({ legal }: SignatureFooter): FooterViewModel {
+  return { legalHtml: escapeText(legal).replace(/\r?\n/g, "<br>") };
+}
+
+/** Emails and web addresses become links; anything else is plain escaped text. */
+function renderFieldValue(value: string, linkColor: string): string {
+  const linkStyle = `color:${linkColor};text-decoration:none`;
+  if (isValidEmail(value)) {
+    return `<a href="${escapeHtml(toMailtoHref(value))}" style="${linkStyle}">${escapeHtml(value)}</a>`;
+  }
+  if (/^(https?:\/\/|www\.)\S+$/i.test(value)) {
+    const href = normalizeWebUrl(value);
+    if (href) return `<a href="${escapeHtml(href)}" style="${linkStyle}">${escapeHtml(toDisplayUrl(href))}</a>`;
+  }
+  return escapeHtml(value);
 }
 
 function escapeText(value: string): string {
