@@ -42,7 +42,7 @@ export function StepPanel({
     >
       <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 pt-6 pb-5">
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.08em] text-indigo-600 uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.08em] text-brand-600 uppercase">
             Step {stepIndex + 1} of {EDITOR_STEPS.length}
           </p>
           <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-slate-900">{step.title}</h2>
@@ -63,7 +63,7 @@ export function StepPanel({
         </Button>
         <StepDots activeIndex={stepIndex} />
         {isLast ? (
-          <Button variant="brand" size="sm" onClick={onFinish}>
+          <Button size="sm" onClick={onFinish}>
             Add to my email
             <ArrowRight />
           </Button>
@@ -86,9 +86,9 @@ function StepDots({ activeIndex }: { activeIndex: number }) {
           key={step.id}
           className={
             index === activeIndex
-              ? "h-1.5 w-4 rounded-full bg-indigo-500"
+              ? "h-1.5 w-4 rounded-full bg-brand-500"
               : index < activeIndex
-                ? "size-1.5 rounded-full bg-indigo-200"
+                ? "size-1.5 rounded-full bg-brand-200"
                 : "size-1.5 rounded-full bg-slate-200"
           }
         />

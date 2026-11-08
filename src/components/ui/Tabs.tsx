@@ -52,7 +52,7 @@ export function Tabs({ items, label, className }: TabsProps) {
               onKeyDown={(event) => handleKeyDown(event, index)}
               className={cn(
                 "flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-medium transition-all",
-                "focus-visible:outline-2 focus-visible:outline-indigo-500",
+                "focus-visible:outline-2 focus-visible:outline-brand-500",
                 isActive ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900",
               )}
             >

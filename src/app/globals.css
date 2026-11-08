@@ -4,12 +4,22 @@
   --font-sans: var(--font-geist-sans);
 }
 
-/* Design tokens. "ink" is the deep navy used for the studio rail and dark accents. */
+/*
+ * Design tokens. One brand color, a deep pine green, used solid (no
+ * gradients) for the studio rail, buttons, selection and focus states.
+ */
 @theme {
-  --color-ink-950: #070b1a;
-  --color-ink-900: #0d1428;
-  --color-ink-800: #172040;
-  --color-ink-700: #24305a;
+  --color-brand-50: #eff8f6;
+  --color-brand-100: #d8eeea;
+  --color-brand-200: #b3ddd5;
+  --color-brand-300: #84c4b9;
+  --color-brand-400: #55a699;
+  --color-brand-500: #368a7e;
+  --color-brand-600: #276f66;
+  --color-brand-700: #215a53;
+  --color-brand-800: #1d4944;
+  --color-brand-900: #183d39;
+  --color-brand-950: #0c2321;
 
   --shadow-studio: 0 1px 2px rgb(15 23 42 / 0.04), 0 12px 40px -12px rgb(15 23 42 / 0.18);
   --shadow-window: 0 1px 2px rgb(15 23 42 / 0.06), 0 24px 48px -16px rgb(15 23 42 / 0.22);

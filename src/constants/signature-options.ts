@@ -23,8 +23,8 @@ export const FONT_OPTIONS = [
 ] as const;
 
 export const COLOR_PRESETS = [
+  "#276f66",
   "#1d4ed8",
-  "#0f766e",
   "#15803d",
   "#b45309",
   "#be123c",

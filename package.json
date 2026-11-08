@@ -10,7 +10,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "icons": "node scripts/generate-social-icons.mjs",
-    "placeholders": "node scripts/generate-placeholders.mjs"
+    "placeholders": "node scripts/generate-placeholders.mjs",
+    "app-icons": "node scripts/generate-app-icons.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.70.0",

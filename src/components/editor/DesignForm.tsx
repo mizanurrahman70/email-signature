@@ -42,7 +42,7 @@ function ColorPicker({ field, label, presets }: ColorPickerProps) {
           htmlFor={customId}
           className={cn(
             "flex h-9 cursor-pointer items-center gap-2 rounded-full bg-white pr-3 pl-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 transition hover:ring-slate-300",
-            "has-focus-visible:ring-2 has-focus-visible:ring-indigo-500",
+            "has-focus-visible:ring-2 has-focus-visible:ring-brand-500",
             isCustom && "ring-2 ring-slate-900",
           )}
         >
@@ -76,7 +76,7 @@ function ColorSwatch({ color, isSelected, onSelect }: ColorSwatchProps) {
       style={{ backgroundColor: color }}
       className={cn(
         "flex size-9 items-center justify-center rounded-full text-white shadow-sm ring-1 ring-black/10 ring-inset transition-transform hover:scale-110",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
         isSelected && "ring-2 ring-white ring-offset-2 ring-offset-slate-900",
       )}
     >
@@ -102,9 +102,9 @@ function FontPicker() {
               onClick={() => actions.updateStyle({ fontFamily: font.value })}
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
                 isSelected
-                  ? "bg-indigo-50/70 ring-2 ring-indigo-500"
+                  ? "bg-brand-50/70 ring-2 ring-brand-500"
                   : "bg-white ring-1 ring-slate-200 hover:ring-slate-300",
               )}
             >

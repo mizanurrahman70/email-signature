@@ -15,7 +15,7 @@ export function InstallGuides({ id }: { id: string }) {
     <section id={id} className="scroll-mt-20">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
-          <p className="text-xs font-semibold tracking-[0.08em] text-indigo-600 uppercase">Last step</p>
+          <p className="text-xs font-semibold tracking-[0.08em] text-brand-600 uppercase">Last step</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Add it to your email</h2>
           <p className="mt-3 max-w-md text-[15px] leading-relaxed text-slate-600">
             Click <span className="font-medium text-slate-900">Copy signature</span> in the editor, then paste it into
@@ -36,7 +36,7 @@ function GuideSteps({ guide }: { guide: InstallGuide }) {
       <ol className="relative flex flex-col gap-4">
         {guide.steps.map((step, index) => (
           <li key={step} className="flex gap-3.5 text-sm text-slate-700">
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-100">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">
               {index + 1}
             </span>
             <span className="pt-0.5 leading-relaxed">{step}</span>

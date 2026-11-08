@@ -31,7 +31,7 @@ export function TextField({ label, value, onValueChange, leading, hint, classNam
           className={cn(
             "h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 shadow-xs transition",
             "placeholder:text-slate-400 hover:border-slate-300",
-            "focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 focus:outline-none",
+            "focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none",
             Boolean(leading) && "pl-10",
           )}
           {...inputProps}

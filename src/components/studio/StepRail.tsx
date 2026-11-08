@@ -23,7 +23,7 @@ interface StepRailProps {
   getPanelId: (id: EditorStepId) => string;
 }
 
-/** Dark vertical step bar on desktop; a horizontal scroller on small screens. */
+/** Solid brand-color vertical step bar on desktop; a horizontal bar on small screens. */
 export function StepRail({ activeId, onSelect, getTabId, getPanelId }: StepRailProps) {
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -37,7 +37,7 @@ export function StepRail({ activeId, onSelect, getTabId, getPanelId }: StepRailP
   }
 
   return (
-    <nav aria-label="Signature editor" className="bg-ink-950 lg:w-[92px]">
+    <nav aria-label="Signature editor" className="bg-brand-900 lg:w-[92px]">
       <div
         role="tablist"
         aria-orientation="vertical"
@@ -63,22 +63,22 @@ export function StepRail({ activeId, onSelect, getTabId, getPanelId }: StepRailP
               onKeyDown={(event) => handleKeyDown(event, index)}
               className={cn(
                 "group relative flex min-w-[60px] flex-1 flex-col items-center gap-1.5 rounded-xl px-1 py-2.5 text-[11px] font-medium transition-colors lg:min-w-[72px] lg:flex-none lg:px-2",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400",
-                isActive ? "bg-white/[0.08] text-white" : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+                isActive ? "bg-white/10 text-white" : "text-brand-100/70 hover:bg-white/5 hover:text-white",
               )}
             >
               {isActive && (
                 <span
                   aria-hidden="true"
-                  className="absolute inset-x-4 -bottom-2 h-0.5 rounded-full bg-indigo-400 lg:inset-x-auto lg:inset-y-3 lg:-left-2.5 lg:h-auto lg:w-0.5"
+                  className="absolute inset-x-4 -bottom-2 h-0.5 rounded-full bg-white lg:inset-x-auto lg:inset-y-3 lg:-left-2.5 lg:h-auto lg:w-0.5"
                 />
               )}
               <span
                 className={cn(
                   "flex size-9 items-center justify-center rounded-lg transition-colors",
                   isActive
-                    ? "bg-gradient-to-b from-indigo-400 to-indigo-600 text-white shadow-lg shadow-indigo-500/30"
-                    : "bg-white/[0.04] ring-1 ring-white/[0.06] group-hover:bg-white/[0.08]",
+                    ? "bg-white text-brand-900 shadow-md shadow-black/20"
+                    : "bg-white/5 ring-1 ring-white/10 group-hover:bg-white/10",
                 )}
               >
                 <Icon className="size-[18px]" strokeWidth={1.75} aria-hidden="true" />

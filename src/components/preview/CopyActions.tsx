@@ -32,7 +32,7 @@ export function CopyActions() {
         <SourceIcon />
         <span className="max-sm:sr-only">{COPY_STATUS_LABELS[sourceCopy.status] ?? "HTML"}</span>
       </Button>
-      <Button variant="brand" size="sm" onClick={() => signatureCopy.run(() => copySignature(state))}>
+      <Button size="sm" onClick={() => signatureCopy.run(() => copySignature(state))}>
         <SignatureIcon />
         {COPY_STATUS_LABELS[signatureCopy.status] ?? "Copy signature"}
       </Button>

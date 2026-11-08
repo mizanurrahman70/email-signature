@@ -51,7 +51,7 @@ export function ImageUploadField({ kind, label, hint }: ImageUploadFieldProps) {
         onDrop={handleDrop}
         className={cn(
           "flex items-center gap-4 rounded-2xl border border-dashed p-4 transition-colors",
-          isDragging ? "border-indigo-400 bg-indigo-50/60" : "border-slate-300 bg-slate-50/60",
+          isDragging ? "border-brand-400 bg-brand-50/60" : "border-slate-300 bg-slate-50/60",
         )}
       >
         <ImageThumbnail url={imageUrl} alt={label} rounded={kind === "photo"} isPending={isPending} />
@@ -118,7 +118,7 @@ function ImageThumbnail({ url, alt, rounded, isPending }: ImageThumbnailProps) {
           shape,
         )}
       >
-        {isPending ? <Loader2 className="size-5 animate-spin text-indigo-500" /> : <ImageUp className="size-5" />}
+        {isPending ? <Loader2 className="size-5 animate-spin text-brand-500" /> : <ImageUp className="size-5" />}
       </div>
     );
   }

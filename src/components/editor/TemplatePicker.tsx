@@ -20,9 +20,9 @@ export function TemplatePicker() {
               key={template.id}
               className={cn(
                 "group relative flex cursor-pointer flex-col gap-2.5 rounded-2xl p-2 transition-all",
-                "has-focus-visible:ring-2 has-focus-visible:ring-indigo-500 has-focus-visible:ring-offset-2",
+                "has-focus-visible:ring-2 has-focus-visible:ring-brand-500 has-focus-visible:ring-offset-2",
                 isSelected
-                  ? "bg-indigo-50/70 ring-2 ring-indigo-500"
+                  ? "bg-brand-50/70 ring-2 ring-brand-500"
                   : "bg-slate-50 ring-1 ring-slate-200/70 hover:-translate-y-0.5 hover:bg-white hover:shadow-md hover:ring-slate-300",
               )}
             >
@@ -40,7 +40,7 @@ export function TemplatePicker() {
                 <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">{template.description}</span>
               </span>
               {isSelected && (
-                <span className="absolute top-3.5 right-3.5 flex size-5 items-center justify-center rounded-full bg-indigo-600 text-white shadow-md shadow-indigo-600/30">
+                <span className="absolute top-3.5 right-3.5 flex size-5 items-center justify-center rounded-full bg-brand-600 text-white shadow-md shadow-brand-600/30">
                   <Check className="size-3" strokeWidth={3} aria-hidden="true" />
                   <span className="sr-only">Selected</span>
                 </span>
