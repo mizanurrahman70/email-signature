@@ -3,7 +3,7 @@ import type { ImageKind } from "@/types/signature";
 /** Shared between server and client: upload limits and delivery transforms. */
 
 /** Largest file a user may pick. Big phone photos are fine: they're shrunk before upload. */
-export const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
+export const MAX_SOURCE_BYTES = 5 * 1024 * 1024;
 /** Largest file actually sent to Cloudinary, after compression. */
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
