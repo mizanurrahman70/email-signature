@@ -1,12 +1,6 @@
 /** The studio's steps, in order. Icons are mapped by id in the StepRail component. */
 export const EDITOR_STEPS = [
   {
-    id: "template",
-    label: "Template",
-    title: "Choose a template",
-    description: "Pick a layout to start with. You can switch anytime; your details stay put.",
-  },
-  {
     id: "details",
     label: "Details",
     title: "Your details",
@@ -23,6 +17,12 @@ export const EDITOR_STEPS = [
     label: "Images",
     title: "Photo & logo",
     description: "Upload images. They're hosted for you, so they show in every inbox.",
+  },
+  {
+    id: "template",
+    label: "Template",
+    title: "Choose a template",
+    description: "Pick a layout. Your details and images carry over to every template.",
   },
   {
     id: "style",
