@@ -5,7 +5,7 @@ import { memo, useEffect, useMemo, useRef } from "react";
 import { useIframeAutoHeight } from "@/hooks/useIframeAutoHeight";
 import { EDIT_ATTR } from "@/lib/signature/edit-targets";
 import { cn } from "@/utils/cn";
-import { buildPreviewDocument } from "@/utils/html";
+import { buildPreviewDocument, EDITABLE_PREVIEW_GUTTER } from "@/utils/html";
 
 const INITIAL_HEIGHT = 120;
 
@@ -57,8 +57,12 @@ export const SignaturePreview = memo(function SignaturePreview({ html, isStale, 
         srcDoc={srcDoc}
         sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
         onLoad={handleFrameLoad}
-        style={{ height }}
-        className={cn("block w-full border-0 transition-opacity", isStale && "opacity-60")}
+        style={
+          isEditable
+            ? { height, margin: -EDITABLE_PREVIEW_GUTTER, width: `calc(100% + ${EDITABLE_PREVIEW_GUTTER * 2}px)` }
+            : { height }
+        }
+        className={cn("block w-full max-w-none border-0 transition-opacity", isStale && "opacity-60")}
       />
       {scale < 1 && (
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-500">

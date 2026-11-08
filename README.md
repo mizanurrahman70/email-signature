@@ -102,6 +102,10 @@ The Details step mirrors the signature's order: About you → **Custom fields** 
 - **Custom fields:** up to 5 "Label: value" rows, shown in every template directly under name / title / company ([renderCustomFields](src/lib/signature/templates/parts.ts)). Values that are emails or web addresses become links. In Banner they open the white area just below the accent bar, where links stay readable.
 - **Legal content:** a disclaimer or confidentiality notice (up to 1000 characters, with an "Insert standard disclaimer" shortcut). It's rendered once in `render.ts` ([templates/footer.ts](src/lib/signature/templates/footer.ts)) below whichever template is selected, in small print under a thin rule, with line breaks kept.
 
+## Signature width
+
+The Style step has a **Signature width** control: **Auto** (natural width, the default) or **Custom** (320–800px, slider or number box). A custom width wraps the signature in a table with `width="W"` for Outlook desktop and `width:100%; max-width:Wpx` for other clients, so it still shrinks on phones. The template stretches to fill it. Saved widths outside the range fall back to Auto.
+
 ## Handwritten signatures
 
 The **Signature** image field has a "Create handwritten signature" option that opens a modal (native `<dialog>`):

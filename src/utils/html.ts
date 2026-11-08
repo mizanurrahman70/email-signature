@@ -46,9 +46,16 @@ export function buildPreviewDocument(bodyHtml: string, { editable = false } = {}
   ].join("");
 }
 
+/**
+ * Space around the editable preview so hover outlines (drawn outside each part)
+ * aren't clipped at the iframe's edges. The iframe is shifted out by the same
+ * amount, so the signature stays aligned with the surrounding email.
+ */
+export const EDITABLE_PREVIEW_GUTTER = 6;
+
 /** Hover outline for click-to-edit parts (`data-edit`) in the preview only. */
 const EDITABLE_PREVIEW_CSS = [
-  "body{cursor:pointer}",
+  `body{cursor:pointer;padding:${EDITABLE_PREVIEW_GUTTER}px}`,
   "[data-edit]{cursor:pointer;border-radius:4px;outline:2px solid transparent;outline-offset:2px;transition:outline-color .15s,background-color .15s}",
   "[data-edit]:hover{outline-color:rgba(54,138,126,.55);background-color:rgba(54,138,126,.07)}",
 ].join("");

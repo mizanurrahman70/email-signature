@@ -5,6 +5,7 @@ import {
   FONT_OPTIONS,
   MUTED_TEXT_COLOR,
   PLACEHOLDER_IMAGES,
+  SIGNATURE_WIDTH,
   SOCIAL_ICON_DIR,
   SOCIAL_OPTIONS,
 } from "@/constants/signature-options";
@@ -51,6 +52,7 @@ export function buildViewModel(
     textColor: safeHexColor(style.textColor, fallbackStyle.textColor),
     mutedColor: MUTED_TEXT_COLOR,
     fontFamily: ALLOWED_FONTS.has(style.fontFamily) ? style.fontFamily : fallbackStyle.fontFamily,
+    width: toSignatureWidth(style.width),
     customFields: buildCustomFields(footer.customFields, primaryColor),
     editable,
     footer: buildFooter(footer),
@@ -82,6 +84,12 @@ function renderFieldValue(value: string, linkColor: string): string {
     if (href) return `<a href="${escapeHtml(href)}" style="${linkStyle}">${escapeHtml(toDisplayUrl(href))}</a>`;
   }
   return escapeHtml(value);
+}
+
+/** Rounds and clamps a custom width; null (Auto) passes through. */
+function toSignatureWidth(width: number | null): number | null {
+  if (width === null || !Number.isFinite(width)) return null;
+  return Math.min(SIGNATURE_WIDTH.max, Math.max(SIGNATURE_WIDTH.min, Math.round(width)));
 }
 
 function escapeText(value: string): string {

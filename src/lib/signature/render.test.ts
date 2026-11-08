@@ -298,3 +298,31 @@ describe("click-to-edit markers", () => {
     expect(renderSignatureHtml(fullState(templateId), OPTIONS)).not.toContain("data-edit");
   });
 });
+
+describe("signature width", () => {
+  it("leaves the output unchanged on Auto", () => {
+    const auto = renderSignatureHtml(withState({ style: { width: null } }), OPTIONS);
+    expect(auto).not.toContain("max-width:");
+    expect(auto.startsWith("<table")).toBe(true);
+  });
+
+  it.each(TEMPLATE_IDS)("wraps the %s template in a fixed but shrinkable width", (templateId) => {
+    const html = renderSignatureHtml(withState({ style: { templateId, width: 600 } }), OPTIONS);
+    expect(html).toMatch(/^<table[^>]* width="600"[^>]*style="[^"]*width:100%;max-width:600px/);
+  });
+
+  it("lets the legal text fill the custom width", () => {
+    const html = renderSignatureHtml(withState({ style: { width: 640 }, footer: { legal: "Notice" } }), OPTIONS);
+    expect(html).not.toContain("max-width:560px");
+  });
+
+  it("repairs saved widths that are out of range or missing", () => {
+    const save = (width: unknown) => JSON.stringify({ ...DEFAULT_SIGNATURE, style: { ...DEFAULT_SIGNATURE.style, width } });
+    expect(parseSignatureState(save(600)).style.width).toBe(600);
+    expect(parseSignatureState(save(5000)).style.width).toBeNull();
+    expect(parseSignatureState(save("wide")).style.width).toBeNull();
+    const { width: _omit, ...styleWithoutWidth } = DEFAULT_SIGNATURE.style;
+    void _omit;
+    expect(parseSignatureState(JSON.stringify({ ...DEFAULT_SIGNATURE, style: styleWithoutWidth })).style.width).toBeNull();
+  });
+});

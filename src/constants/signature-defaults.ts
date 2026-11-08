@@ -31,6 +31,7 @@ export const DEFAULT_SIGNATURE: SignatureState = {
     primaryColor: COLOR_PRESETS[0],
     textColor: "#1f2937",
     fontFamily: FONT_OPTIONS[0].value,
+    width: null,
   },
   footer: {
     legal: "",

@@ -29,6 +29,8 @@ export interface SignatureStyle {
   primaryColor: string;
   textColor: string;
   fontFamily: string;
+  /** Signature width in px, or null for Auto (natural width). */
+  width: number | null;
 }
 
 export type ColorField = "primaryColor" | "textColor";
@@ -119,6 +121,8 @@ export interface SignatureViewModel {
   textColor: string;
   mutedColor: string;
   fontFamily: string;
+  /** Validated custom width in px, or null for Auto. */
+  width: number | null;
   /** Shown directly under name / title / company. */
   customFields: CustomFieldLine[];
   /** True when rendering the interactive preview (adds click-to-edit markers). */

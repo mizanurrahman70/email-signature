@@ -19,7 +19,8 @@ export function renderFooter(vm: SignatureViewModel): string {
       marginTop: "14px",
       paddingTop: "8px",
       borderTop: `1px solid ${DIVIDER_COLOR}`,
-      maxWidth: LEGAL_MAX_WIDTH,
+      // With a custom signature width the legal text simply fills it.
+      maxWidth: vm.width ? undefined : LEGAL_MAX_WIDTH,
       fontSize: "11px",
       lineHeight: "1.5",
       color: vm.mutedColor,

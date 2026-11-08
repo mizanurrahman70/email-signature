@@ -129,3 +129,6 @@ export const MAX_CUSTOM_FIELDS = 5;
 export const MAX_LEGAL_LENGTH = 1000;
 export const STANDARD_DISCLAIMER =
   "This email and any attachments are confidential and intended solely for the addressee. If you received it in error, please notify the sender and delete it. Any unauthorized use, disclosure or copying is prohibited.";
+
+/** Custom signature width (Style step). Auto = natural width. */
+export const SIGNATURE_WIDTH = { min: 320, max: 800, step: 10, initial: 560 } as const;

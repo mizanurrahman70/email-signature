@@ -54,7 +54,7 @@ export function StepPanel({
         </Button>
       </header>
 
-      <div key={panelId} className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 py-6 [scrollbar-gutter:stable]">
+      <div key={panelId} className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 py-6 [scrollbar-gutter:stable] lg:overscroll-contain">
         {children}
       </div>
 

@@ -4,6 +4,7 @@ import {
   IMAGE_KINDS,
   MAX_CUSTOM_FIELDS,
   MAX_LEGAL_LENGTH,
+  SIGNATURE_WIDTH,
   SOCIAL_NETWORKS,
   TEMPLATE_IDS,
 } from "@/constants/signature-options";
@@ -45,6 +46,8 @@ const signatureSchema = z.object({
       primaryColor: hexColor.catch(DEFAULT_SIGNATURE.style.primaryColor),
       textColor: hexColor.catch(DEFAULT_SIGNATURE.style.textColor),
       fontFamily: z.string().catch(DEFAULT_SIGNATURE.style.fontFamily),
+      // Missing (older drafts) or out-of-range widths fall back to Auto.
+      width: z.number().int().min(SIGNATURE_WIDTH.min).max(SIGNATURE_WIDTH.max).nullable().catch(null),
     })
     .catch(DEFAULT_SIGNATURE.style),
   // Drafts saved before the footer existed have no `footer`; they get the empty default.

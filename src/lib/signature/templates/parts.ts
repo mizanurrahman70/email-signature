@@ -18,9 +18,15 @@ export function renderTable(rows: string, style: InlineStyle = {}, attributes = 
   return `<table ${TABLE_RESET}${attributes ? ` ${attributes}` : ""}${styleAttr ? ` style="${styleAttr}"` : ""}>${rows}</table>`;
 }
 
-/** Root table styles shared by every template. */
+/** Root table styles shared by every template. With a custom width, the template fills it. */
 export function rootStyle(vm: SignatureViewModel): InlineStyle {
-  return { fontFamily: vm.fontFamily, fontSize: "14px", lineHeight: "1.45", color: vm.textColor };
+  return {
+    fontFamily: vm.fontFamily,
+    fontSize: "14px",
+    lineHeight: "1.45",
+    color: vm.textColor,
+    width: vm.width ? "100%" : undefined,
+  };
 }
 
 /** Wraps content in a centered table; `margin: auto` doesn't work in Outlook. */

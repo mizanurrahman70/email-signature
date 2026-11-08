@@ -32,9 +32,15 @@ export function renderSignatureHtml(state: SignatureState, options: RenderOption
   const vm = buildViewModel(state, options);
   const body = render(vm);
   const footer = renderFooter(vm);
+  if (!footer && !vm.width) return body;
 
   // The footer sits under any template, so templates don't each repeat it.
-  return footer ? renderTable(`<tr><td>${body}</td></tr><tr><td>${footer}</td></tr>`, rootStyle(vm)) : body;
+  const rows = [body, footer].filter(Boolean).map((html) => `<tr><td>${html}</td></tr>`).join("");
+  if (!vm.width) return renderTable(rows, rootStyle(vm));
+
+  // Custom width: Outlook desktop honours the width attribute; other clients use
+  // width:100% capped by max-width, so the signature still shrinks on phones.
+  return renderTable(rows, { ...rootStyle(vm), maxWidth: `${vm.width}px` }, `width="${vm.width}"`);
 }
 
 /** Plain-text fallback placed on the clipboard next to the HTML. */

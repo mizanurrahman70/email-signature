@@ -8,6 +8,7 @@ import type { ColorField } from "@/types/signature";
 import { cn } from "@/utils/cn";
 import { isSameColor } from "@/utils/color";
 import { useSignature } from "./SignatureContext";
+import { WidthControl } from "./WidthControl";
 
 export function DesignForm() {
   return (
@@ -15,6 +16,7 @@ export function DesignForm() {
       <ColorPicker field="primaryColor" label="Accent color" presets={COLOR_PRESETS} />
       <ColorPicker field="textColor" label="Text color" presets={TEXT_COLOR_PRESETS} />
       <FontPicker />
+      <WidthControl />
     </div>
   );
 }
