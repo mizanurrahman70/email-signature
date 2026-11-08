@@ -15,7 +15,7 @@ export const EDITOR_STEPS = [
   {
     id: "images",
     label: "Images",
-    title: "Photo & logo",
+    title: "Photo & signature",
     description: "Upload images. They're hosted for you, so they show in every inbox.",
   },
   {

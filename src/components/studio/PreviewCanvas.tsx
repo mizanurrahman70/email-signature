@@ -1,6 +1,6 @@
 "use client";
 
-import { Monitor, Smartphone, TriangleAlert } from "lucide-react";
+import { Monitor, Smartphone } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { useSignature } from "@/components/editor/SignatureContext";
 import { CopyActions } from "@/components/preview/CopyActions";
@@ -11,7 +11,7 @@ import { PREVIEW_DEVICES } from "@/constants/editor";
 import { TEMPLATE_OPTIONS } from "@/constants/signature-options";
 import { renderSignatureHtml } from "@/lib/signature/render";
 import type { PreviewDevice } from "@/types/editor";
-import { getRenderOptions, isLocalUrl } from "@/utils/site";
+import { getRenderOptions } from "@/utils/site";
 
 const DEVICE_OPTIONS: ReadonlyArray<SegmentOption<PreviewDevice>> = [
   { value: "desktop", label: "Desktop", icon: <Monitor aria-hidden="true" /> },
@@ -31,8 +31,6 @@ export function PreviewCanvas() {
 
   const templateName = TEMPLATE_OPTIONS.find((template) => template.id === state.style.templateId)?.name;
   const deviceWidth = PREVIEW_DEVICES.find((option) => option.id === device)?.width ?? PREVIEW_DEVICES[0].width;
-  const showLocalIconWarning =
-    isLocalUrl(renderOptions.assetBaseUrl) && Object.values(deferredState.social).some((link) => link.trim());
 
   return (
     <section aria-label="Live preview" className="flex min-h-0 min-w-0 flex-1 flex-col bg-slate-50">
@@ -59,19 +57,6 @@ export function PreviewCanvas() {
         <EmailWindow width={deviceWidth}>
           <SignaturePreview html={html} isStale={state !== deferredState} />
         </EmailWindow>
-
-        {showLocalIconWarning && (
-          <p
-            role="note"
-            className="mx-auto mt-5 flex max-w-[680px] gap-2.5 rounded-xl bg-amber-50 px-4 py-3 text-[13px] text-amber-900 ring-1 ring-inset ring-amber-200/70"
-          >
-            <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            <span>
-              Icons load from {renderOptions.assetBaseUrl}, which recipients can&apos;t reach. Copy your signature from
-              the deployed site, or set NEXT_PUBLIC_SITE_URL.
-            </span>
-          </p>
-        )}
       </div>
     </section>
   );

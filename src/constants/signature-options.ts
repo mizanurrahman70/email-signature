@@ -50,7 +50,7 @@ export const TEMPLATE_OPTIONS: ReadonlyArray<{
   description: string;
 }> = [
   { id: "classic", name: "Classic", description: "Photo left, details beside a colored divider." },
-  { id: "stacked", name: "Stacked", description: "Logo on top, details below, accent bar underneath." },
+  { id: "stacked", name: "Stacked", description: "Signature image on top, details below, accent bar underneath." },
   { id: "split", name: "Split", description: "Photo and name, then contact details with icons." },
   { id: "centered", name: "Centered", description: "Everything centered under a round photo." },
   { id: "reversed", name: "Reversed", description: "Details with icons on the left, photo on the right." },
@@ -58,7 +58,7 @@ export const TEMPLATE_OPTIONS: ReadonlyArray<{
   { id: "banner", name: "Banner", description: "Name and photo on an accent bar, contacts below." },
   { id: "compact", name: "Compact", description: "Small photo, two tidy lines. Great for replies." },
   { id: "boxed", name: "Boxed", description: "A bordered card with an accent edge." },
-  { id: "corporate", name: "Corporate", description: "Logo first, then your details beside a divider." },
+  { id: "corporate", name: "Corporate", description: "Signature image first, then your details beside a divider." },
 ];
 
 export const DETAIL_GROUPS = [
@@ -117,7 +117,7 @@ export const TEXT_COLOR_PRESETS = ["#111827", "#1f2937", "#374151", "#4b5563"] a
 
 export const IMAGE_FIELDS: ReadonlyArray<{ kind: ImageKind; label: string; hint: string }> = [
   { kind: "photo", label: "Profile photo", hint: "Square images work best. Cropped to a circle around your face." },
-  { kind: "logo", label: "Company logo", hint: `PNG with a transparent background looks best. Max ${formatMegabytes(MAX_UPLOAD_BYTES)}.` },
+  { kind: "logo", label: "Signature", hint: `Your handwritten signature or a logo. A PNG with a transparent background looks best. Max ${formatMegabytes(MAX_UPLOAD_BYTES)}.` },
 ];
 
 /** Contact icons are rendered on demand in the accent color by /api/icons/[name]. */

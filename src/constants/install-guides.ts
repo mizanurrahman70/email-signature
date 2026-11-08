@@ -11,7 +11,6 @@ export const INSTALL_GUIDES: ReadonlyArray<InstallGuide> = [
       "Name it, then paste (Ctrl/Cmd + V) into the signature box.",
       "Choose it under “Signature defaults”, then click “Save Changes” at the bottom.",
     ],
-    tip: "Images show as soon as they are hosted online — uploaded images already are.",
   },
   {
     id: "outlook",

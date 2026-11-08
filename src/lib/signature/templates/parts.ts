@@ -59,7 +59,7 @@ export function renderPhoto(vm: SignatureViewModel, size: number): string {
 }
 
 export function renderLogo(vm: SignatureViewModel, width: number): string {
-  return vm.logoUrl ? renderImage(vm.logoUrl, vm.company || "Logo", width) : "";
+  return vm.logoUrl ? renderImage(vm.logoUrl, "Signature", width) : "";
 }
 
 export function renderSpacer(height: number): string {

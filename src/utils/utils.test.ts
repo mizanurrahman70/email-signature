@@ -78,14 +78,8 @@ describe("error", () => {
   });
 });
 
-describe("site", async () => {
-  const { isLocalUrl } = await import("./site");
+describe("url resolution", async () => {
   const { toAbsoluteUrl } = await import("./url");
-
-  it("detects local origins", () => {
-    expect(isLocalUrl("http://localhost:3000")).toBe(true);
-    expect(isLocalUrl("https://signatures.example.com")).toBe(false);
-  });
 
   it("resolves asset paths against a base URL", () => {
     expect(toAbsoluteUrl("/social-icons/x.png", "https://a.com")).toBe("https://a.com/social-icons/x.png");
