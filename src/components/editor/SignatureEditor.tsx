@@ -6,6 +6,7 @@ import { PreviewCanvas } from "@/components/studio/PreviewCanvas";
 import { StepPanel } from "@/components/studio/StepPanel";
 import { StepRail } from "@/components/studio/StepRail";
 import { EDITOR_STEPS, RESET_CONFIRMATION } from "@/constants/editor";
+import { useDockingWheel } from "@/hooks/useDockingWheel";
 import { usePersistentSignature } from "@/hooks/usePersistentSignature";
 import { EDIT_TARGET_ATTR, parseEditTarget } from "@/lib/signature/edit-targets";
 import { useStepNavigation } from "@/hooks/useStepNavigation";
@@ -22,6 +23,10 @@ const STEP_IDS = EDITOR_STEPS.map((step) => step.id);
 const INSTALL_SECTION_ID = "install";
 /** Height of the sticky site header (h-14); sticky studio parts sit just below it. */
 const STICKY_HEADER_HEIGHT = 56;
+/** Where the studio rests while editing: matches its `scroll-mt-20` (80px). */
+const STUDIO_DOCK_TOP = 80;
+/** The studio only has its own scroll areas in the desktop layout (Tailwind `lg`). */
+const DESKTOP_LAYOUT = "(min-width: 1024px)";
 
 const STEP_CONTENT: Record<EditorStepId, ReactNode> = {
   template: <TemplatePicker />,
@@ -53,6 +58,7 @@ function Studio() {
   const steps = useStepNavigation(STEP_IDS);
   const baseId = useId();
   const studioRef = useRef<HTMLDivElement>(null);
+  useDockingWheel(studioRef, STUDIO_DOCK_TOP, DESKTOP_LAYOUT);
   const getTabId = (id: EditorStepId) => `${baseId}-tab-${id}`;
   const getPanelId = (id: EditorStepId) => `${baseId}-panel-${id}`;
 

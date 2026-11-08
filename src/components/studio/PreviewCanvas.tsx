@@ -65,7 +65,7 @@ export function PreviewCanvas({ onEdit }: PreviewCanvasProps) {
         </div>
       </div>
 
-      <div className="bg-dots scrollbar-thin min-h-0 flex-1 overflow-auto px-4 py-8 sm:px-8 lg:overscroll-contain lg:py-12">
+      <div className="bg-dots scrollbar-thin min-h-0 flex-1 overflow-auto px-4 py-8 sm:px-8 lg:py-12">
         <EmailWindow width={deviceWidth}>
           <SignaturePreview html={html} isStale={state !== deferredState} onEdit={onEdit} />
         </EmailWindow>
