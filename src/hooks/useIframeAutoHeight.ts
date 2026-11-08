@@ -19,12 +19,20 @@ export function useIframeAutoHeight(initialHeight: number) {
     if (!iframe || !doc?.body) return;
 
     const measure = () => {
+      const root = doc.documentElement;
       doc.body.style.zoom = "1";
-      const contentWidth = doc.documentElement.scrollWidth;
-      const nextScale = Math.min(1, iframe.clientWidth / Math.max(contentWidth, 1));
+      let nextScale = Math.min(1, iframe.clientWidth / Math.max(root.scrollWidth, 1));
       doc.body.style.zoom = String(nextScale);
+
+      // Zooming can reflow content (e.g. 100%-wide tables), so check once more
+      // and shrink a little further if anything still overflows.
+      if (root.scrollWidth > root.clientWidth + 1) {
+        nextScale *= root.clientWidth / root.scrollWidth;
+        doc.body.style.zoom = String(nextScale);
+      }
+
       setScale(nextScale);
-      setHeight(doc.documentElement.scrollHeight);
+      setHeight(Math.ceil(root.scrollHeight));
     };
 
     measure();

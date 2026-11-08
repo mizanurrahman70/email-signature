@@ -39,7 +39,9 @@ export function buildPreviewDocument(bodyHtml: string, { editable = false } = {}
   return [
     "<!doctype html>",
     '<html><head><meta charset="utf-8"><base target="_blank">',
-    "<style>html,body{margin:0;padding:0;background:#ffffff}",
+    // overflow:hidden: the iframe is sized to fit, so it never needs scroll bars
+    // (which would also steal space and throw off the fit-to-width zoom).
+    "<style>html,body{margin:0;padding:0;background:#ffffff}html{overflow:hidden}",
     editable ? EDITABLE_PREVIEW_CSS : "",
     "</style>",
     `</head><body>${bodyHtml}</body></html>`,

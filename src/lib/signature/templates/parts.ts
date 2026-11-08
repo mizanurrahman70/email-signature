@@ -142,17 +142,22 @@ export function renderMutedText(vm: SignatureViewModel, html: string): string {
   return renderText(html, { fontSize: "13px", color: vm.mutedColor });
 }
 
-/** Each phone number, email or URL stays on one line; lines may break between values. Addresses wrap freely. */
+/**
+ * Each phone number, email or URL stays on one line. Between two values (phone
+ * | mobile) the "|" sticks to the first one, so a wrap never leaves it alone on
+ * a line. Addresses wrap freely.
+ */
 function renderContactLinks(contact: ContactLine, vm: SignatureViewModel): string {
+  const isLast = (index: number) => index === contact.links.length - 1;
   return contact.links
-    .map((link) => {
+    .map((link, index) => {
       const html = renderLink(link.href, link.text, vm.textColor);
       const target: EditTarget = `details:${link.field}`;
-      return contact.icon === "address"
-        ? editable(vm, target, html)
-        : `<span style="white-space:nowrap"${editAttr(vm, target)}>${html}</span>`;
+      if (contact.icon === "address") return editable(vm, target, html);
+      const separator = isLast(index) ? "" : "&nbsp;|";
+      return `<span style="white-space:nowrap"${editAttr(vm, target)}>${html}${separator}</span>`;
     })
-    .join(" | ");
+    .join(" ");
 }
 
 function withoutAddress(vm: SignatureViewModel): ContactLine[] {
