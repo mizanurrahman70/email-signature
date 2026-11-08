@@ -74,8 +74,13 @@ function Studio() {
   /** Preview click-to-edit: open the part's step and focus its form control. */
   function handleEdit(rawTarget: string | null) {
     const parsed = parseEditTarget(rawTarget);
-    goToStep(() => steps.setActiveId(parsed?.step ?? "details"));
-    if (parsed) focusWhenReady(`[${EDIT_TARGET_ATTR}="${CSS.escape(parsed.target)}"]`);
+    if (!parsed) {
+      goToStep(() => steps.setActiveId("details"));
+      return;
+    }
+    // Scroll only to the field: a second smooth scroll to the studio would fight it.
+    steps.setActiveId(parsed.step);
+    focusWhenReady(`[${EDIT_TARGET_ATTR}="${CSS.escape(parsed.target)}"]`);
   }
 
   function handleReset() {

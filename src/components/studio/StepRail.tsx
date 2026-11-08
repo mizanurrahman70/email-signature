@@ -37,7 +37,7 @@ export function StepRail({ activeId, onSelect, getTabId, getPanelId }: StepRailP
   }
 
   return (
-    <nav aria-label="Signature editor" className="bg-brand-900 lg:w-[92px]">
+    <nav aria-label="Signature editor" className="order-1 bg-brand-900 lg:w-[92px]">
       <div
         role="tablist"
         aria-orientation="vertical"

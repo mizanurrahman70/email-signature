@@ -38,7 +38,7 @@ export function StepPanel({
       id={panelId}
       role="tabpanel"
       aria-labelledby={tabId}
-      className="flex min-h-0 flex-col border-slate-200 bg-white lg:w-[420px] lg:border-r"
+      className="order-3 flex min-h-0 flex-col border-slate-200 bg-white lg:order-2 lg:w-[420px] lg:border-r"
     >
       <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 pt-6 pb-5">
         <div>
@@ -54,7 +54,8 @@ export function StepPanel({
         </Button>
       </header>
 
-      <div key={panelId} className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 py-6 [scrollbar-gutter:stable] lg:overscroll-contain">
+      {/* On small screens, keep focused fields clear of the pinned preview and the Back/Next bar. */}
+      <div key={panelId} className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 py-6 [scrollbar-gutter:stable] max-lg:[&_input,&_textarea,&_button]:scroll-mt-[23rem] max-lg:[&_input,&_textarea,&_button]:scroll-mb-28 lg:overscroll-contain">
         {children}
       </div>
 

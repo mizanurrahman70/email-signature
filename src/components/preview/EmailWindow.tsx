@@ -19,7 +19,7 @@ export function EmailWindow({ width, children }: EmailWindowProps) {
         <span className="ml-3 text-xs font-medium text-slate-400">New message</span>
       </div>
 
-      <dl className="divide-y divide-slate-100 border-b border-slate-100 text-[13px]">
+      <dl className="divide-y divide-slate-100 border-b border-slate-100 text-[13px] max-lg:hidden">
         <div className="flex items-center gap-3 px-5 py-2.5">
           <dt className="w-14 text-slate-400">To</dt>
           <dd>
@@ -34,8 +34,8 @@ export function EmailWindow({ width, children }: EmailWindowProps) {
         </div>
       </dl>
 
-      <div className="px-5 pt-5 pb-6">
-        <div aria-hidden="true" className="mb-7 space-y-2.5">
+      <div className="px-3 py-3 lg:px-5 lg:pt-5 lg:pb-6">
+        <div aria-hidden="true" className="mb-7 space-y-2.5 max-lg:hidden">
           <div className="h-2 w-full rounded-full bg-slate-100" />
           <div className="h-2 w-11/12 rounded-full bg-slate-100" />
           <div className="h-2 w-3/5 rounded-full bg-slate-100" />

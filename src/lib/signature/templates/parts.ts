@@ -196,7 +196,9 @@ export function renderIconContacts(vm: SignatureViewModel): string {
       const icon = renderImage(vm.contactIcons[contact.icon], contact.label, CONTACT_ICON_SIZE, CONTACT_ICON_SIZE);
       const iconCell = `<td width="${CONTACT_ICON_SIZE}" style="${toInlineStyle({ verticalAlign: "middle", padding: "3px 10px 3px 0" })}">${icon}</td>`;
       const textCell = `<td style="${toInlineStyle({ verticalAlign: "middle", fontSize: "13px", padding: "3px 0" })}">${renderContactLinks(contact, vm)}</td>`;
-      return `<tr>${iconCell}${textCell}</tr>`;
+      // The whole row is a click-to-edit target (handy for wrapped text on phones);
+      // each value inside still targets its own field (e.g. phone vs mobile).
+      return `<tr${editAttr(vm, `details:${contact.links[0].field}`)}>${iconCell}${textCell}</tr>`;
     })
     .join("");
 

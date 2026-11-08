@@ -65,7 +65,7 @@ export const SignaturePreview = memo(function SignaturePreview({ html, isStale, 
         className={cn("block w-full max-w-none border-0 transition-opacity", isStale && "opacity-60")}
       />
       {scale < 1 && (
-        <p className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-500">
+        <p className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-500 max-lg:hidden">
           <ZoomOut className="size-3" aria-hidden="true" />
           Zoomed to {Math.round(scale * 100)}% to fit, as phone mail apps do
         </p>
