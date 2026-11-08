@@ -95,7 +95,11 @@ function Studio() {
       >
         {STEP_CONTENT[steps.activeId]}
       </StepPanel>
-      <PreviewCanvas />
+      <PreviewCanvas
+        onEditDetails={
+          steps.activeId === "details" ? undefined : () => goToStep(() => steps.setActiveId("details"))
+        }
+      />
     </div>
   );
 }
