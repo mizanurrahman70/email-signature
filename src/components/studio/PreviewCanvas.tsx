@@ -1,6 +1,6 @@
 "use client";
 
-import { Monitor, PenLine, Smartphone } from "lucide-react";
+import { Monitor, MousePointerClick, Smartphone } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { useSignature } from "@/components/editor/SignatureContext";
 import { CopyActions } from "@/components/preview/CopyActions";
@@ -19,19 +19,19 @@ const DEVICE_OPTIONS: ReadonlyArray<SegmentOption<PreviewDevice>> = [
 ];
 
 interface PreviewCanvasProps {
-  /** When set, clicking the signature calls this (e.g. to open the Details step). */
-  onEditDetails?: () => void;
+  /** Click-to-edit: receives the clicked part's edit target (or null for empty space). */
+  onEdit: (target: string | null) => void;
 }
 
 /** Right side of the studio: toolbar with device toggle and copy, plus the email preview. */
-export function PreviewCanvas({ onEditDetails }: PreviewCanvasProps) {
+export function PreviewCanvas({ onEdit }: PreviewCanvasProps) {
   const { state } = useSignature();
   const [device, setDevice] = useState<PreviewDevice>("desktop");
 
   // Typing stays responsive; the preview re-renders at lower priority.
   const deferredState = useDeferredValue(state);
-  // Placeholders fill empty image slots in the preview; copies never include them.
-  const renderOptions = useMemo(() => getRenderOptions({ showPlaceholders: true }), []);
+  // Placeholders and click-to-edit markers are preview-only; copies never include them.
+  const renderOptions = useMemo(() => getRenderOptions({ showPlaceholders: true, editable: true }), []);
   const html = useMemo(() => renderSignatureHtml(deferredState, renderOptions), [deferredState, renderOptions]);
 
   const templateName = TEMPLATE_OPTIONS.find((template) => template.id === state.style.templateId)?.name;
@@ -54,6 +54,10 @@ export function PreviewCanvas({ onEditDetails }: PreviewCanvasProps) {
               {templateName}
             </span>
           )}
+          <span className="hidden items-center gap-1 text-[11px] text-slate-400 xl:flex">
+            <MousePointerClick className="size-3.5" aria-hidden="true" />
+            Click any part to edit it
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <SegmentedControl label="Preview size" options={DEVICE_OPTIONS} value={device} onChange={setDevice} />
@@ -63,32 +67,9 @@ export function PreviewCanvas({ onEditDetails }: PreviewCanvasProps) {
 
       <div className="bg-dots scrollbar-thin min-h-0 flex-1 overflow-auto px-4 py-8 sm:px-8 lg:py-12">
         <EmailWindow width={deviceWidth}>
-          <div className="group relative">
-            <SignaturePreview html={html} isStale={state !== deferredState} />
-            {onEditDetails && <EditDetailsOverlay onClick={onEditDetails} />}
-          </div>
+          <SignaturePreview html={html} isStale={state !== deferredState} onEdit={onEdit} />
         </EmailWindow>
       </div>
     </section>
-  );
-}
-
-/**
- * Clicks inside the preview iframe never reach this page, so a transparent
- * button covers the signature to make it clickable.
- */
-function EditDetailsOverlay({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Edit your details"
-      className="absolute -inset-2 flex cursor-pointer items-start justify-end rounded-xl p-2 ring-brand-400/60 transition hover:bg-brand-50/30 hover:ring-2 focus-visible:ring-2 focus-visible:outline-none"
-    >
-      <span className="flex items-center gap-1.5 rounded-full bg-brand-900 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 shadow-md transition group-hover:opacity-100 group-focus-within:opacity-100">
-        <PenLine className="size-3" aria-hidden="true" />
-        Edit details
-      </span>
-    </button>
   );
 }

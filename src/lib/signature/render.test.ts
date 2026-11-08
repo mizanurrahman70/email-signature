@@ -251,3 +251,42 @@ describe("email signature footer", () => {
     ).toEqual({ legal: "", customFields: [] });
   });
 });
+
+describe("click-to-edit markers", () => {
+  const fullState = (templateId: SignatureState["style"]["templateId"]) =>
+    withState({
+      style: { templateId },
+      images: { photo: "https://res.cloudinary.com/demo/p.png", logo: "https://res.cloudinary.com/demo/l.png" },
+      social: { github: "github.com/jane" },
+      footer: { legal: "Notice", customFields: [{ id: "abc", label: "Skype", value: "jane" }] },
+    });
+
+  it.each(TEMPLATE_IDS)("marks every editable part in the %s preview", (templateId) => {
+    const html = renderSignatureHtml(fullState(templateId), { ...OPTIONS, editable: true });
+
+    for (const target of [
+      "details:fullName",
+      "details:pronouns",
+      "details:jobTitle",
+      "details:department",
+      "details:company",
+      "details:custom-abc",
+      "details:phone",
+      "details:mobile",
+      "details:email",
+      "details:website",
+      "details:address",
+      "details:legal",
+      "social:linkedin",
+      "social:github",
+    ]) {
+      expect(html, target).toContain(`data-edit="${target}"`);
+    }
+    // Minimal is text-only; Corporate shows the signature image in place of the photo.
+    if (templateId !== "minimal") expect(html).toMatch(/data-edit="images:(photo|logo)"/);
+  });
+
+  it.each(TEMPLATE_IDS)("never puts markers in the copied %s signature", (templateId) => {
+    expect(renderSignatureHtml(fullState(templateId), OPTIONS)).not.toContain("data-edit");
+  });
+});

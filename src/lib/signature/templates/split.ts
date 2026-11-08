@@ -1,6 +1,7 @@
 import type { SignatureViewModel } from "@/types/signature";
 import { joinHtml, toInlineStyle } from "@/utils/html";
 import {
+  editable,
   renderCustomFields,
   renderIconContacts,
   renderLogo,
@@ -29,9 +30,12 @@ export function renderSplitTemplate(vm: SignatureViewModel): string {
 
   const identity = joinHtml([
     renderName(vm, { showPronouns: false }),
-    renderText(vm.jobTitle, { fontSize: "14px", marginTop: "4px" }),
-    renderText(joinHtml([vm.department, vm.company], " | "), { fontSize: "14px" }),
-    renderMutedText(vm, vm.pronouns),
+    renderText(editable(vm, "details:jobTitle", vm.jobTitle), { fontSize: "14px", marginTop: "4px" }),
+    renderText(
+      joinHtml([editable(vm, "details:department", vm.department), editable(vm, "details:company", vm.company)], " | "),
+      { fontSize: "14px" },
+    ),
+    renderMutedText(vm, editable(vm, "details:pronouns", vm.pronouns)),
     renderCustomFields(vm),
   ]);
   const identityCell = `<td style="${toInlineStyle({ verticalAlign: "middle", paddingRight: "20px", whiteSpace: "nowrap" })}">${identity}</td>`;

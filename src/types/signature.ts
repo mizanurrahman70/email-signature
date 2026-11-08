@@ -66,6 +66,8 @@ export type SignatureAction =
   | { type: "reset" };
 
 export interface ContactLink {
+  /** The form field this value comes from (for click-to-edit). */
+  field: DetailField;
   /** Escaped, ready to embed in HTML. */
   text: string;
   /** Empty for plain text (e.g. an address). */
@@ -80,6 +82,7 @@ export interface ContactLine {
 }
 
 export interface SocialIcon {
+  network: SocialNetwork;
   label: string;
   href: string;
   /** Absolute URL of the hosted PNG icon. */
@@ -91,6 +94,8 @@ export interface RenderOptions {
   assetBaseUrl: string;
   /** Show placeholder images where none are set. Preview only; never copied. */
   showPlaceholders?: boolean;
+  /** Add `data-edit` markers for click-to-edit. Preview only; never copied. */
+  editable?: boolean;
 }
 
 /**
@@ -116,11 +121,14 @@ export interface SignatureViewModel {
   fontFamily: string;
   /** Shown directly under name / title / company. */
   customFields: CustomFieldLine[];
+  /** True when rendering the interactive preview (adds click-to-edit markers). */
+  editable: boolean;
   footer: FooterViewModel;
 }
 
 /** An escaped "Label: value" line; the value may be a link. */
 export interface CustomFieldLine {
+  id: string;
   label: string;
   valueHtml: string;
 }

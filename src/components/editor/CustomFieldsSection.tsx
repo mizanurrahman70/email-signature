@@ -34,6 +34,7 @@ export function CustomFieldsSection() {
             label={`Value ${index + 1}`}
             value={field.value}
             onValueChange={(value) => actions.updateCustomField(field.id, { value })}
+            data-edit-target={`details:custom-${field.id}`}
             placeholder="calendly.com/jane"
             maxLength={200}
           />

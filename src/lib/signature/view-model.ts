@@ -31,7 +31,7 @@ const ALLOWED_FONTS = new Set<string>(FONT_OPTIONS.map((font) => font.value));
 
 export function buildViewModel(
   { details, social, images, style, footer }: SignatureState,
-  { assetBaseUrl, showPlaceholders = false }: RenderOptions,
+  { assetBaseUrl, showPlaceholders = false, editable = false }: RenderOptions,
 ): SignatureViewModel {
   const fallbackStyle = DEFAULT_SIGNATURE.style;
   const primaryColor = safeHexColor(style.primaryColor, fallbackStyle.primaryColor);
@@ -52,6 +52,7 @@ export function buildViewModel(
     mutedColor: MUTED_TEXT_COLOR,
     fontFamily: ALLOWED_FONTS.has(style.fontFamily) ? style.fontFamily : fallbackStyle.fontFamily,
     customFields: buildCustomFields(footer.customFields, primaryColor),
+    editable,
     footer: buildFooter(footer),
   };
 }
@@ -59,7 +60,11 @@ export function buildViewModel(
 function buildCustomFields(fields: CustomField[], linkColor: string): CustomFieldLine[] {
   return fields
     .filter((field) => field.value.trim())
-    .map((field) => ({ label: escapeText(field.label), valueHtml: renderFieldValue(field.value.trim(), linkColor) }));
+    .map((field) => ({
+      id: field.id,
+      label: escapeText(field.label),
+      valueHtml: renderFieldValue(field.value.trim(), linkColor),
+    }));
 }
 
 function buildFooter({ legal }: SignatureFooter): FooterViewModel {
@@ -89,11 +94,18 @@ function buildContacts({ phone, mobile, email, website, address }: SignatureDeta
     {
       icon: "phone",
       label: "P",
-      links: [phone, mobile].map((number) => ({ text: escapeText(number), href: toTelHref(number) })),
+      links: [
+        { field: "phone", text: escapeText(phone), href: toTelHref(phone) },
+        { field: "mobile", text: escapeText(mobile), href: toTelHref(mobile) },
+      ],
     },
-    { icon: "email", label: "E", links: [{ text: escapeText(email), href: toMailtoHref(email) }] },
-    { icon: "website", label: "W", links: [{ text: escapeHtml(toDisplayUrl(websiteHref)), href: websiteHref }] },
-    { icon: "address", label: "A", links: [{ text: escapeText(address), href: "" }] },
+    { icon: "email", label: "E", links: [{ field: "email", text: escapeText(email), href: toMailtoHref(email) }] },
+    {
+      icon: "website",
+      label: "W",
+      links: [{ field: "website", text: escapeHtml(toDisplayUrl(websiteHref)), href: websiteHref }],
+    },
+    { icon: "address", label: "A", links: [{ field: "address", text: escapeText(address), href: "" }] },
   ];
 
   return candidates
@@ -120,7 +132,7 @@ function buildSocials(social: SignatureState["social"], assetBaseUrl: string): S
   return SOCIAL_OPTIONS.flatMap(({ network, label }) => {
     const href = normalizeWebUrl(social[network]);
     const iconUrl = toAbsoluteUrl(`${SOCIAL_ICON_DIR}/${network}.png`, assetBaseUrl);
-    return href && iconUrl ? [{ label, href, iconUrl }] : [];
+    return href && iconUrl ? [{ network, label, href, iconUrl }] : [];
   });
 }
 

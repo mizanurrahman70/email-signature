@@ -28,6 +28,7 @@ export function DetailsForm() {
                     autoComplete={autoComplete}
                     value={state.details[field]}
                     onValueChange={(value) => actions.updateDetail(field, value)}
+                    data-edit-target={`details:${field}`}
                     className={wide ? "sm:col-span-2" : undefined}
                   />
                 ),

@@ -16,6 +16,7 @@ export function FooterFields() {
         label="Legal content"
         value={legal}
         onValueChange={actions.updateLegal}
+        data-edit-target="details:legal"
         maxLength={MAX_LEGAL_LENGTH}
         rows={4}
         placeholder="e.g. a confidentiality notice or disclaimer"

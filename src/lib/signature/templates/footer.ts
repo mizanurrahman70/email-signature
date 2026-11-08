@@ -1,5 +1,5 @@
 import type { SignatureViewModel } from "@/types/signature";
-import { renderText } from "./parts";
+import { editAttr, renderText } from "./parts";
 
 const LEGAL_MAX_WIDTH = "560px";
 const DIVIDER_COLOR = "#e5e7eb";
@@ -13,13 +13,17 @@ export function renderFooter(vm: SignatureViewModel): string {
   const { legalHtml } = vm.footer;
   if (!legalHtml) return "";
 
-  return renderText(legalHtml, {
-    marginTop: "14px",
-    paddingTop: "8px",
-    borderTop: `1px solid ${DIVIDER_COLOR}`,
-    maxWidth: LEGAL_MAX_WIDTH,
-    fontSize: "11px",
-    lineHeight: "1.5",
-    color: vm.mutedColor,
-  });
+  return renderText(
+    legalHtml,
+    {
+      marginTop: "14px",
+      paddingTop: "8px",
+      borderTop: `1px solid ${DIVIDER_COLOR}`,
+      maxWidth: LEGAL_MAX_WIDTH,
+      fontSize: "11px",
+      lineHeight: "1.5",
+      color: vm.mutedColor,
+    },
+    editAttr(vm, "details:legal"),
+  );
 }

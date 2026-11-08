@@ -19,6 +19,7 @@ export function SocialForm() {
           placeholder={placeholder}
           value={state.social[network]}
           onValueChange={(value) => actions.updateSocial(network, value)}
+          data-edit-target={`social:${network}`}
           leading={<Image src={`${SOCIAL_ICON_DIR}/${network}.png`} alt="" width={18} height={18} />}
         />
       ))}

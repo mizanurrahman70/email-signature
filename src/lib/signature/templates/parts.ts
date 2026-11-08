@@ -1,4 +1,5 @@
 import { CONTACT_ICON_SIZE, SOCIAL_ICON_SIZE } from "@/constants/signature-options";
+import { EDIT_ATTR, type EditTarget } from "@/lib/signature/edit-targets";
 import type { ContactLine, SignatureViewModel } from "@/types/signature";
 import { escapeHtml, joinHtml, toInlineStyle, type InlineStyle } from "@/utils/html";
 
@@ -32,6 +33,16 @@ export function alignRight(html: string): string {
   return html ? renderTable(`<tr><td>${html}</td></tr>`, {}, 'align="right"') : "";
 }
 
+/** ` data-edit="…"` for click-to-edit in the preview; empty in copied signatures. */
+export function editAttr(vm: SignatureViewModel, target: EditTarget): string {
+  return vm.editable ? ` ${EDIT_ATTR}="${escapeHtml(target)}"` : "";
+}
+
+/** Wraps inline HTML in an editable span in the preview; returns it unchanged otherwise. */
+export function editable(vm: SignatureViewModel, target: EditTarget, html: string): string {
+  return html && vm.editable ? `<span${editAttr(vm, target)}>${html}</span>` : html;
+}
+
 export function verticalDivider(width: number, color = BORDER_COLOR): string {
   return `${width}px solid ${color}`;
 }
@@ -42,7 +53,7 @@ export function renderLink(href: string, text: string, color: string): string {
   return href ? `<a href="${escapeHtml(href)}" style="${style}">${text}</a>` : `<span style="${style}">${text}</span>`;
 }
 
-export function renderImage(src: string, alt: string, width: number, height?: number, radius = 0): string {
+export function renderImage(src: string, alt: string, width: number, height?: number, radius = 0, attributes = ""): string {
   const style = toInlineStyle({
     display: "block",
     border: 0,
@@ -51,15 +62,15 @@ export function renderImage(src: string, alt: string, width: number, height?: nu
     borderRadius: radius ? `${radius}px` : undefined,
   });
   const heightAttr = height ? ` height="${height}"` : "";
-  return `<img src="${escapeHtml(src)}" alt="${alt}" width="${width}"${heightAttr} style="${style}" />`;
+  return `<img src="${escapeHtml(src)}" alt="${alt}" width="${width}"${heightAttr} style="${style}"${attributes} />`;
 }
 
 export function renderPhoto(vm: SignatureViewModel, size: number): string {
-  return vm.photoUrl ? renderImage(vm.photoUrl, vm.name, size, size, size / 2) : "";
+  return vm.photoUrl ? renderImage(vm.photoUrl, vm.name, size, size, size / 2, editAttr(vm, "images:photo")) : "";
 }
 
 export function renderLogo(vm: SignatureViewModel, width: number): string {
-  return vm.logoUrl ? renderImage(vm.logoUrl, "Signature", width) : "";
+  return vm.logoUrl ? renderImage(vm.logoUrl, "Signature", width, undefined, 0, editAttr(vm, "images:logo")) : "";
 }
 
 export function renderSpacer(height: number): string {
@@ -67,8 +78,8 @@ export function renderSpacer(height: number): string {
 }
 
 /** A styled block of text; renders nothing when the content is empty. */
-export function renderText(html: string, style: InlineStyle): string {
-  return html ? `<div style="${toInlineStyle(style)}">${html}</div>` : "";
+export function renderText(html: string, style: InlineStyle, attributes = ""): string {
+  return html ? `<div style="${toInlineStyle(style)}"${attributes}>${html}</div>` : "";
 }
 
 interface NameOptions {
@@ -85,17 +96,23 @@ export function renderName(
 ): string {
   const pronouns =
     showPronouns && vm.pronouns
-      ? ` <span style="${toInlineStyle({ fontSize: "12px", fontWeight: "normal", color: pronounsColor ?? vm.mutedColor })}">(${vm.pronouns})</span>`
+      ? ` <span style="${toInlineStyle({ fontSize: "12px", fontWeight: "normal", color: pronounsColor ?? vm.mutedColor })}"${editAttr(vm, "details:pronouns")}>(${vm.pronouns})</span>`
       : "";
-  return renderText(vm.name && `${vm.name}${pronouns}`, {
-    fontSize: `${fontSize}px`,
-    fontWeight: "bold",
-    color: color ?? vm.textColor,
-  });
+  return renderText(
+    vm.name && `${editable(vm, "details:fullName", vm.name)}${pronouns}`,
+    { fontSize: `${fontSize}px`, fontWeight: "bold", color: color ?? vm.textColor },
+  );
 }
 
 export function renderTitleLine(vm: SignatureViewModel, separator: string): string {
-  return joinHtml([vm.jobTitle, vm.department, vm.company], separator);
+  return joinHtml(
+    [
+      editable(vm, "details:jobTitle", vm.jobTitle),
+      editable(vm, "details:department", vm.department),
+      editable(vm, "details:company", vm.company),
+    ],
+    separator,
+  );
 }
 
 /** Custom "Label: value" lines, placed directly under name / title / company. */
@@ -104,8 +121,12 @@ export function renderCustomFields(vm: SignatureViewModel): string {
 
   const labelStyle = toInlineStyle({ color: vm.primaryColor, fontWeight: "bold" });
   const lines = vm.customFields
-    .map(({ label, valueHtml }) =>
-      renderText(label ? `<span style="${labelStyle}">${label}:</span>&nbsp;${valueHtml}` : valueHtml, { fontSize: "13px" }),
+    .map(({ id, label, valueHtml }) =>
+      renderText(
+        label ? `<span style="${labelStyle}">${label}:</span>&nbsp;${valueHtml}` : valueHtml,
+        { fontSize: "13px" },
+        editAttr(vm, `details:custom-${id}`),
+      ),
     )
     .join("");
   return `<div style="margin-top:4px">${lines}</div>`;
@@ -120,7 +141,10 @@ function renderContactLinks(contact: ContactLine, vm: SignatureViewModel): strin
   return contact.links
     .map((link) => {
       const html = renderLink(link.href, link.text, vm.textColor);
-      return contact.icon === "address" ? html : `<span style="white-space:nowrap">${html}</span>`;
+      const target: EditTarget = `details:${link.field}`;
+      return contact.icon === "address"
+        ? editable(vm, target, html)
+        : `<span style="white-space:nowrap"${editAttr(vm, target)}>${html}</span>`;
     })
     .join(" | ");
 }
@@ -131,7 +155,7 @@ function withoutAddress(vm: SignatureViewModel): ContactLine[] {
 
 export function renderAddress(vm: SignatureViewModel): string {
   const address = vm.contacts.find((contact) => contact.icon === "address");
-  return address ? renderMutedText(vm, address.links[0].text) : "";
+  return address ? renderMutedText(vm, editable(vm, "details:address", address.links[0].text)) : "";
 }
 
 /** "P: +1 555…" lines with accent-colored labels. */
@@ -175,7 +199,7 @@ export function renderSocialIcons(vm: SignatureViewModel, align: "left" | "cente
   const cells = vm.socials
     .map((social) => {
       const icon = renderImage(social.iconUrl, social.label, SOCIAL_ICON_SIZE, SOCIAL_ICON_SIZE);
-      const link = `<a href="${escapeHtml(social.href)}" title="${social.label}" style="text-decoration:none">${icon}</a>`;
+      const link = `<a href="${escapeHtml(social.href)}" title="${social.label}" style="text-decoration:none"${editAttr(vm, `social:${social.network}`)}>${icon}</a>`;
       return `<td style="padding:0 3px">${link}</td>`;
     })
     .join("");
@@ -186,6 +210,8 @@ export function renderSocialIcons(vm: SignatureViewModel, align: "left" | "cente
 
 /** Social profiles as text links, for image-free templates. */
 export function renderSocialTextLinks(vm: SignatureViewModel): string {
-  const links = vm.socials.map((social) => renderLink(social.href, social.label, vm.primaryColor));
+  const links = vm.socials.map((social) =>
+    editable(vm, `social:${social.network}`, renderLink(social.href, social.label, vm.primaryColor)),
+  );
   return renderText(links.join("&nbsp;&middot;&nbsp;"), { fontSize: "12px", marginTop: "6px" });
 }

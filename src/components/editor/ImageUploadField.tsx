@@ -78,7 +78,13 @@ export function ImageUploadField({ kind, label, hint, allowHandwriting = false }
               aria-describedby={hintId}
               tabIndex={-1}
             />
-            <Button variant="secondary" size="sm" onClick={() => inputRef.current?.click()} disabled={isPending}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => inputRef.current?.click()}
+              disabled={isPending}
+              data-edit-target={`images:${kind}`}
+            >
               <ImageUp />
               {isPending ? "Uploading…" : imageUrl ? "Replace" : "Upload"}
             </Button>

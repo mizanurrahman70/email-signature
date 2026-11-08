@@ -7,8 +7,10 @@ import { StepPanel } from "@/components/studio/StepPanel";
 import { StepRail } from "@/components/studio/StepRail";
 import { EDITOR_STEPS, RESET_CONFIRMATION } from "@/constants/editor";
 import { usePersistentSignature } from "@/hooks/usePersistentSignature";
+import { EDIT_TARGET_ATTR, parseEditTarget } from "@/lib/signature/edit-targets";
 import { useStepNavigation } from "@/hooks/useStepNavigation";
 import type { EditorStepId } from "@/types/editor";
+import { focusWhenReady } from "@/utils/dom";
 import { DesignForm } from "./DesignForm";
 import { DetailsForm } from "./DetailsForm";
 import { ImagesForm } from "./ImagesForm";
@@ -63,6 +65,13 @@ function Studio() {
     }
   }
 
+  /** Preview click-to-edit: open the part's step and focus its form control. */
+  function handleEdit(rawTarget: string | null) {
+    const parsed = parseEditTarget(rawTarget);
+    goToStep(() => steps.setActiveId(parsed?.step ?? "details"));
+    if (parsed) focusWhenReady(`[${EDIT_TARGET_ATTR}="${CSS.escape(parsed.target)}"]`);
+  }
+
   function handleReset() {
     if (window.confirm(RESET_CONFIRMATION)) actions.reset();
   }
@@ -95,11 +104,7 @@ function Studio() {
       >
         {STEP_CONTENT[steps.activeId]}
       </StepPanel>
-      <PreviewCanvas
-        onEditDetails={
-          steps.activeId === "details" ? undefined : () => goToStep(() => steps.setActiveId("details"))
-        }
-      />
+      <PreviewCanvas onEdit={handleEdit} />
     </div>
   );
 }
