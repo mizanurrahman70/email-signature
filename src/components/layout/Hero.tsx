@@ -1,6 +1,7 @@
-import { CheckCircle2, Mail } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { FreeSeal } from "./FreeSeal";
 
-const HIGHLIGHTS = ["No sign-up", "Gmail, Outlook & Apple Mail", "Images hosted for you"] as const;
+const HIGHLIGHTS = ["Gmail, Outlook & Apple Mail", "10 professional templates", "Images hosted for you"] as const;
 
 export function Hero() {
   return (
@@ -9,10 +10,11 @@ export function Hero() {
         aria-hidden="true"
         className="absolute inset-x-0 -top-40 -z-10 mx-auto h-[420px] max-w-4xl rounded-full bg-brand-100/60 blur-3xl"
       />
+      <FreeSeal />
       <div className="mx-auto max-w-3xl px-4 pt-14 pb-10 text-center sm:px-6 lg:pt-20 lg:pb-14">
-        <p className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-brand-700 shadow-xs ring-1 ring-brand-100">
-          <Mail className="size-3.5" aria-hidden="true" />
-          Free email signature generator
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/80 py-1 pr-3 pl-1 text-xs font-medium text-brand-800 shadow-xs ring-1 ring-brand-100">
+          <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[11px] font-bold text-white">100% free</span>
+          No sign-up · No watermark
         </p>
         <h1 className="mt-5 text-4xl font-semibold tracking-tight text-balance text-slate-900 sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
           A signature that looks{" "}

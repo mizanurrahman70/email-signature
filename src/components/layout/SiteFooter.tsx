@@ -8,7 +8,15 @@ export function SiteFooter() {
           © <CopyrightYear /> Signature Studio. All rights reserved.
         </p>
         <p>
-          Developed by <span className="font-semibold text-brand-800">Traideas</span>
+          Developed by{" "}
+          <a
+            href="https://traideas.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-sm font-semibold text-brand-800 underline-offset-2 hover:text-brand-600 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          >
+            Traideas
+          </a>
         </p>
       </div>
     </footer>
