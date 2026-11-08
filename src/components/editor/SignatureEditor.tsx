@@ -1,15 +1,14 @@
 "use client";
 
-import { use, useDeferredValue, useMemo, useState } from "react";
+import { use, useId, type ReactNode } from "react";
 import { browser } from "react-dom";
-import { CopyActions } from "@/components/preview/CopyActions";
-import { SignaturePreview } from "@/components/preview/SignaturePreview";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Tabs, type TabItem } from "@/components/ui/Tabs";
+import { PreviewCanvas } from "@/components/studio/PreviewCanvas";
+import { StepPanel } from "@/components/studio/StepPanel";
+import { StepRail } from "@/components/studio/StepRail";
+import { EDITOR_STEPS, RESET_CONFIRMATION } from "@/constants/editor";
 import { usePersistentSignature } from "@/hooks/usePersistentSignature";
-import { renderSignatureHtml } from "@/lib/signature/render";
-import { getRenderOptions, isLocalUrl } from "@/utils/site";
+import { useStepNavigation } from "@/hooks/useStepNavigation";
+import type { EditorStepId } from "@/types/editor";
 import { DesignForm } from "./DesignForm";
 import { DetailsForm } from "./DetailsForm";
 import { ImagesForm } from "./ImagesForm";
@@ -17,7 +16,16 @@ import { SignatureProvider, useSignature } from "./SignatureContext";
 import { SocialForm } from "./SocialForm";
 import { TemplatePicker } from "./TemplatePicker";
 
-type EditorTabId = "template" | "details" | "social" | "images" | "design";
+const STEP_IDS = EDITOR_STEPS.map((step) => step.id);
+const INSTALL_SECTION_ID = "install";
+
+const STEP_CONTENT: Record<EditorStepId, ReactNode> = {
+  template: <TemplatePicker />,
+  details: <DetailsForm />,
+  social: <SocialForm />,
+  images: <ImagesForm />,
+  style: <DesignForm />,
+};
 
 /**
  * Browser-only: the draft lives in localStorage, so the first render can't
@@ -30,72 +38,44 @@ export function SignatureEditor() {
 
   return (
     <SignatureProvider state={state} dispatch={dispatch}>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <EditorPanel />
-        <PreviewPanel />
-      </div>
+      <Studio />
     </SignatureProvider>
   );
 }
 
-function EditorPanel() {
+/** Rail | settings panel | preview canvas. Stacks vertically below `lg`. */
+function Studio() {
   const { actions } = useSignature();
-  const [activeTab, setActiveTab] = useState<EditorTabId>("template");
+  const steps = useStepNavigation(STEP_IDS);
+  const baseId = useId();
+  const getTabId = (id: EditorStepId) => `${baseId}-tab-${id}`;
+  const getPanelId = (id: EditorStepId) => `${baseId}-panel-${id}`;
 
-  // Step 1 is picking a template; "Continue" moves on to the details form.
-  const tabs = useMemo<ReadonlyArray<TabItem>>(
-    () => [
-      { id: "template", label: "Template", content: <TemplatePicker onContinue={() => setActiveTab("details")} /> },
-      { id: "details", label: "Details", content: <DetailsForm /> },
-      { id: "social", label: "Social", content: <SocialForm /> },
-      { id: "images", label: "Images", content: <ImagesForm /> },
-      { id: "design", label: "Design", content: <DesignForm /> },
-    ],
-    [],
-  );
+  function handleReset() {
+    if (window.confirm(RESET_CONFIRMATION)) actions.reset();
+  }
 
-  return (
-    <Card
-      title="Your signature"
-      description="Changes are saved in this browser automatically."
-      actions={
-        <Button variant="ghost" onClick={actions.reset}>
-          Reset
-        </Button>
-      }
-    >
-      <Tabs
-        items={tabs}
-        label="Signature settings"
-        activeId={activeTab}
-        onActiveIdChange={(id) => setActiveTab(id as EditorTabId)}
-      />
-    </Card>
-  );
-}
-
-function PreviewPanel() {
-  const { state } = useSignature();
-  // Typing stays responsive; the preview re-renders at lower priority.
-  const deferredState = useDeferredValue(state);
-  const renderOptions = useMemo(() => getRenderOptions(), []);
-  const html = useMemo(() => renderSignatureHtml(deferredState, renderOptions), [deferredState, renderOptions]);
-  const hasSocialLinks = Object.values(deferredState.social).some((link) => link.trim());
+  function handleFinish() {
+    document.getElementById(INSTALL_SECTION_ID)?.scrollIntoView({ behavior: "smooth" });
+  }
 
   return (
-    <div className="lg:sticky lg:top-6 lg:self-start">
-      <Card title="Live preview" description="This is exactly what gets copied.">
-        <div className="flex flex-col gap-4">
-          <SignaturePreview html={html} isStale={state !== deferredState} />
-          {hasSocialLinks && isLocalUrl(renderOptions.assetBaseUrl) && (
-            <p role="note" className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              Social icons are served from {renderOptions.assetBaseUrl}, which recipients can&apos;t reach. Deploy the
-              app or set NEXT_PUBLIC_SITE_URL before copying a signature for real use.
-            </p>
-          )}
-          <CopyActions />
-        </div>
-      </Card>
+    <div className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-studio ring-1 ring-slate-900/5 lg:h-[820px] lg:flex-row">
+      <StepRail activeId={steps.activeId} onSelect={steps.setActiveId} getTabId={getTabId} getPanelId={getPanelId} />
+      <StepPanel
+        stepIndex={steps.activeIndex}
+        tabId={getTabId(steps.activeId)}
+        panelId={getPanelId(steps.activeId)}
+        isFirst={steps.isFirst}
+        isLast={steps.isLast}
+        onBack={steps.back}
+        onNext={steps.next}
+        onFinish={handleFinish}
+        onReset={handleReset}
+      >
+        {STEP_CONTENT[steps.activeId]}
+      </StepPanel>
+      <PreviewCanvas />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import {
   CONTACT_ICON_NAMES,
   FONT_OPTIONS,
   MUTED_TEXT_COLOR,
+  PLACEHOLDER_IMAGES,
   SOCIAL_ICON_DIR,
   SOCIAL_OPTIONS,
 } from "@/constants/signature-options";
@@ -11,6 +12,7 @@ import type {
   ContactIconName,
   ContactLine,
   ContactLink,
+  ImageKind,
   RenderOptions,
   SignatureDetails,
   SignatureState,
@@ -25,7 +27,7 @@ const ALLOWED_FONTS = new Set<string>(FONT_OPTIONS.map((font) => font.value));
 
 export function buildViewModel(
   { details, social, images, style }: SignatureState,
-  { assetBaseUrl }: RenderOptions,
+  { assetBaseUrl, showPlaceholders = false }: RenderOptions,
 ): SignatureViewModel {
   const fallbackStyle = DEFAULT_SIGNATURE.style;
   const primaryColor = safeHexColor(style.primaryColor, fallbackStyle.primaryColor);
@@ -39,8 +41,8 @@ export function buildViewModel(
     contacts: buildContacts(details),
     contactIcons: buildContactIcons(primaryColor, assetBaseUrl),
     socials: buildSocials(social, assetBaseUrl),
-    photoUrl: toImageUrl(images.photo),
-    logoUrl: toImageUrl(images.logo),
+    photoUrl: toImageUrl(images.photo) || placeholderFor("photo", showPlaceholders, assetBaseUrl),
+    logoUrl: toImageUrl(images.logo) || placeholderFor("logo", showPlaceholders, assetBaseUrl),
     primaryColor,
     textColor: safeHexColor(style.textColor, fallbackStyle.textColor),
     mutedColor: MUTED_TEXT_COLOR,
@@ -91,6 +93,10 @@ function buildSocials(social: SignatureState["social"], assetBaseUrl: string): S
     const iconUrl = toAbsoluteUrl(`${SOCIAL_ICON_DIR}/${network}.png`, assetBaseUrl);
     return href && iconUrl ? [{ label, href, iconUrl }] : [];
   });
+}
+
+function placeholderFor(kind: ImageKind, enabled: boolean, assetBaseUrl: string): string {
+  return enabled ? toAbsoluteUrl(PLACEHOLDER_IMAGES[kind], assetBaseUrl) : "";
 }
 
 /** Images must be absolute https URLs; email clients cannot load data: or blob: URLs. */

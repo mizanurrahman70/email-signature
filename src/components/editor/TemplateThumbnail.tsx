@@ -1,138 +1,187 @@
-import type { ReactNode } from "react";
+import { ImageIcon } from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
 import type { TemplateId } from "@/types/signature";
 import { cn } from "@/utils/cn";
 
+interface TemplateThumbnailProps {
+  templateId: TemplateId;
+  /** The user's accent color, so thumbnails preview their brand. */
+  accent: string;
+}
+
 /**
- * Wireframe previews of each template's layout. They only need to convey
- * structure, so they're built from a few gray primitives, not real data.
+ * A wireframe of each template's layout, drawn with a handful of skeleton
+ * primitives. Accent-colored parts mirror where the template uses the accent.
  */
-export function TemplateThumbnail({ templateId }: { templateId: TemplateId }) {
+export function TemplateThumbnail({ templateId, accent }: TemplateThumbnailProps) {
   return (
-    <div aria-hidden="true" className="flex h-28 w-full items-center justify-center overflow-hidden rounded-xl bg-white p-4">
-      {THUMBNAILS[templateId]}
+    <div
+      aria-hidden="true"
+      style={{ "--accent": accent } as CSSProperties}
+      className="flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl bg-white px-4 shadow-xs ring-1 ring-slate-900/5"
+    >
+      {LAYOUTS[templateId]}
     </div>
   );
 }
 
-const THUMBNAILS: Record<TemplateId, ReactNode> = {
+const LAYOUTS: Record<TemplateId, ReactNode> = {
   classic: (
     <Row>
-      <Avatar size="md" />
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5 border-l-2 border-slate-300 pl-3">
-        <Line width="w-3/4" strong />
-        <Line width="w-full" />
-        <Line width="w-2/3" />
-        <Dots />
-      </div>
+      <Avatar size={34} />
+      <Stack className="border-l-2 border-[var(--accent)] pl-2.5">
+        <NameBar width={44} />
+        <Line width={56} />
+        <Gap />
+        <Line width={48} />
+        <Line width={40} />
+        <SocialDots />
+      </Stack>
     </Row>
   ),
   stacked: (
-    <div className="flex w-full flex-col gap-1.5">
-      <LogoBox />
+    <Stack className="w-full">
+      <Logo width={30} />
       <Row className="gap-2">
-        <Avatar size="sm" />
-        <div className="flex flex-col gap-1">
-          <Line width="w-16" strong />
-          <Line width="w-12" />
-        </div>
+        <Avatar size={20} />
+        <Stack>
+          <NameBar width={46} />
+          <Line width={34} />
+        </Stack>
       </Row>
-      <Line width="w-full" />
-      <Dots />
-      <div className="h-1 w-full rounded bg-slate-300" />
-    </div>
+      <Line width={96} />
+      <SocialDots />
+      <div className="mt-0.5 h-[3px] w-full rounded-full bg-[var(--accent)]" />
+    </Stack>
   ),
   split: (
-    <div className="flex w-full flex-col gap-2">
+    <Stack className="w-full gap-2">
       <Row className="gap-2">
-        <Avatar size="sm" />
-        <div className="flex flex-col gap-1.5">
-          <Line width="w-7" strong />
-          <Line width="w-5" />
-          <Line width="w-6" />
-        </div>
-        <div className="flex min-w-0 flex-1 flex-col gap-1.5 border-l border-slate-300 pl-2">
-          <IconLine width="w-5" />
-          <IconLine width="w-5" />
-          <IconLine width="w-5" />
-        </div>
+        <Avatar size={30} />
+        <Stack>
+          <NameBar width={30} tone="ink" />
+          <Line width={24} />
+          <Line width={28} />
+        </Stack>
+        <Stack className="border-l border-slate-200 pl-2">
+          <IconLine width={30} />
+          <IconLine width={26} />
+          <IconLine width={32} />
+        </Stack>
       </Row>
       <div className="h-px w-full bg-slate-200" />
-      <LogoBox />
-    </div>
+      <Logo width={26} />
+    </Stack>
   ),
   centered: (
-    <div className="flex w-full flex-col items-center gap-1.5">
-      <Avatar size="sm" />
-      <Line width="w-16" strong />
-      <Line width="w-24" />
-      <Dots />
-    </div>
+    <Stack className="items-center">
+      <Avatar size={24} />
+      <NameBar width={44} />
+      <Line width={60} />
+      <Line width={72} />
+      <SocialDots />
+    </Stack>
   ),
   reversed: (
     <Row>
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <Line width="w-16" strong />
-        <Line width="w-12" />
-        <IconLine />
-        <IconLine />
-        <Dots />
-      </div>
-      <div className="flex flex-col items-center gap-1.5 border-l-2 border-slate-300 pl-3">
-        <Avatar size="md" />
-        <LogoBox />
-      </div>
+      <Stack>
+        <NameBar width={42} />
+        <Line width={36} />
+        <Gap />
+        <IconLine width={34} />
+        <IconLine width={30} />
+        <SocialDots />
+      </Stack>
+      <Stack className="items-center border-l-2 border-[var(--accent)] pl-2.5">
+        <Avatar size={30} />
+        <Logo width={26} />
+      </Stack>
     </Row>
   ),
   minimal: (
-    <div className="flex w-full flex-col gap-1.5">
-      <Line width="w-20" strong />
-      <Line width="w-28" />
-      <Line width="w-full" />
-      <Line width="w-16" />
-    </div>
+    <Stack className="w-full">
+      <NameBar width={52} tone="ink" />
+      <Line width={72} />
+      <Gap />
+      <Line width={100} />
+      <Line width={64} />
+      <Row className="gap-1">
+        {[18, 22, 16].map((width) => (
+          <div key={width} className="h-1 rounded-full bg-[var(--accent)] opacity-70" style={{ width }} />
+        ))}
+      </Row>
+    </Stack>
   ),
 };
 
 function Row({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("flex w-full items-center gap-3", className)}>{children}</div>;
+  return <div className={cn("flex items-center gap-3", className)}>{children}</div>;
 }
 
-function Avatar({ size }: { size: "sm" | "md" }) {
+function Stack({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("flex flex-col gap-[5px]", className)}>{children}</div>;
+}
+
+function Gap() {
+  return <div className="h-0.5" />;
+}
+
+/** Circular photo placeholder with a person silhouette. */
+function Avatar({ size }: { size: number }) {
   return (
     <div
-      className={cn(
-        "flex shrink-0 items-end justify-center overflow-hidden rounded-full bg-slate-200",
-        size === "sm" ? "size-8" : "size-11",
-      )}
+      className="flex shrink-0 items-end justify-center overflow-hidden rounded-full bg-gradient-to-b from-slate-100 to-slate-200 ring-1 ring-slate-900/5"
+      style={{ width: size, height: size }}
     >
-      <div className={cn("rounded-t-full bg-slate-300", size === "sm" ? "h-3 w-5" : "h-4 w-7")} />
+      <svg viewBox="0 0 24 24" className="w-[78%] text-slate-300" fill="currentColor">
+        <circle cx="12" cy="9" r="4.5" />
+        <path d="M3 24c0-5 4-8.5 9-8.5s9 3.5 9 8.5z" />
+      </svg>
     </div>
   );
 }
 
-function Line({ width, strong }: { width: string; strong?: boolean }) {
-  return <div className={cn("h-1.5 shrink-0 rounded-full", width, strong ? "bg-slate-400" : "bg-slate-200")} />;
+function NameBar({ width, tone = "accent" }: { width: number; tone?: "accent" | "ink" }) {
+  return (
+    <div
+      className={cn("h-[7px] rounded-full", tone === "accent" ? "bg-[var(--accent)]" : "bg-slate-700")}
+      style={{ width }}
+    />
+  );
 }
 
-function IconLine({ width = "w-8" }: { width?: string }) {
+function Line({ width }: { width: number }) {
+  return <div className="h-[5px] shrink-0 rounded-full bg-slate-200" style={{ width }} />;
+}
+
+function IconLine({ width }: { width: number }) {
   return (
-    <div className="flex w-full items-center gap-1">
-      <div className="size-1.5 shrink-0 rounded-full bg-slate-400" />
+    <div className="flex items-center gap-1">
+      <div className="size-[5px] shrink-0 rounded-full bg-[var(--accent)] opacity-80" />
       <Line width={width} />
     </div>
   );
 }
 
-function Dots() {
+const SOCIAL_COLORS = ["#0A66C2", "#111827", "#E1306C"] as const;
+
+function SocialDots() {
   return (
-    <div className="flex gap-1">
-      {[0, 1, 2].map((index) => (
-        <div key={index} className="size-2 rounded-full bg-slate-300" />
+    <div className="mt-0.5 flex gap-[3px]">
+      {SOCIAL_COLORS.map((color) => (
+        <div key={color} className="size-[7px] rounded-full" style={{ backgroundColor: color }} />
       ))}
     </div>
   );
 }
 
-function LogoBox() {
-  return <div className="h-3 w-10 rounded bg-slate-200" />;
+function Logo({ width }: { width: number }) {
+  return (
+    <div
+      className="flex h-3 shrink-0 items-center justify-center rounded-[3px] bg-slate-100 ring-1 ring-slate-900/5"
+      style={{ width }}
+    >
+      <ImageIcon className="size-2 text-slate-300" strokeWidth={2.5} />
+    </div>
+  );
 }

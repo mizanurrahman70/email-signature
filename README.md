@@ -20,6 +20,7 @@ npm run dev                  # http://localhost:3000
 | `npm run typecheck` | TypeScript check           |
 | `npm run lint`      | ESLint                     |
 | `npm run icons`     | Regenerate social icon PNGs |
+| `npm run placeholders` | Regenerate preview placeholder images |
 
 Without Cloudinary credentials the app still works: uploads show an error, and users can paste an image URL instead.
 
@@ -32,13 +33,16 @@ src/
 │   ├── api/upload-signature/route.ts  # signs Cloudinary uploads
 │   └── api/icons/[name]/route.ts      # accent-colored contact icon PNGs
 ├── components/             # React UI, grouped by feature
-│   ├── editor/             #   Forms, context, browser-only editor root
-│   ├── preview/            #   Live preview + copy buttons
+│   ├── layout/             #   SiteHeader, Hero, SiteFooter
+│   ├── studio/             #   StepRail (left tabs), StepPanel, PreviewCanvas
+│   ├── editor/             #   Step forms, template picker + thumbnails, context
+│   ├── preview/            #   EmailWindow, sandboxed SignaturePreview, CopyActions
 │   ├── install/            #   Gmail / Outlook / Apple Mail steps
-│   └── ui/                 #   Button, TextField, Tabs, Card
+│   └── ui/                 #   Button, TextField, Tabs, SegmentedControl, FormSection
 ├── hooks/                  # React hooks (persistence, copy status, upload)
 ├── constants/              # Static data and config, no logic
 │   ├── signature-options.ts  # fonts, colors, templates, form fields
+│   ├── editor.ts           #   studio steps, preview device widths
 │   ├── signature-defaults.ts
 │   ├── install-guides.ts
 │   ├── cloudinary.ts       #   limits, folder, delivery transforms
@@ -86,6 +90,10 @@ The live preview renders in a sandboxed iframe so the app's CSS can't affect it,
 ## Contact icons
 
 `GET /api/icons/{phone|email|website|address}?color=rrggbb` returns the icon as a PNG in the accent color, rendered with `sharp` and cached for a year. Email clients don't render SVG, and pre-made PNGs couldn't follow a custom color.
+
+## Placeholder images
+
+Until a photo or logo is added, the live preview fills those slots with gray placeholders (`public/placeholders/`, made by [scripts/generate-placeholders.mjs](scripts/generate-placeholders.mjs)). Only the preview passes `showPlaceholders: true` to the renderer. Copied signatures never include placeholders.
 
 ## Social icons
 

@@ -14,22 +14,13 @@ interface TabsProps {
   items: ReadonlyArray<TabItem>;
   label: string;
   className?: string;
-  /** Pass with `onActiveIdChange` to control the selected tab from outside. */
-  activeId?: string;
-  onActiveIdChange?: (id: string) => void;
 }
 
 /** Accessible tabs following the WAI-ARIA pattern (arrow keys, Home/End). */
-export function Tabs({ items, label, className, activeId: controlledId, onActiveIdChange }: TabsProps) {
+export function Tabs({ items, label, className }: TabsProps) {
   const baseId = useId();
-  const [uncontrolledId, setUncontrolledId] = useState(items[0]?.id);
-  const activeId = controlledId ?? uncontrolledId;
+  const [activeId, setActiveId] = useState(items[0]?.id);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-
-  function setActiveId(id: string) {
-    setUncontrolledId(id);
-    onActiveIdChange?.(id);
-  }
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const nextIndex = getRovingIndex(event.key, index, items.length);
@@ -42,7 +33,7 @@ export function Tabs({ items, label, className, activeId: controlledId, onActive
 
   return (
     <div className={className}>
-      <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1">
+      <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 ring-1 ring-inset ring-slate-200/60">
         {items.map((item, index) => {
           const isActive = item.id === activeId;
           return (
@@ -60,8 +51,8 @@ export function Tabs({ items, label, className, activeId: controlledId, onActive
               onClick={() => setActiveId(item.id)}
               onKeyDown={(event) => handleKeyDown(event, index)}
               className={cn(
-                "flex-1 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                "focus-visible:outline-2 focus-visible:outline-blue-600",
+                "flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-medium transition-all",
+                "focus-visible:outline-2 focus-visible:outline-indigo-500",
                 isActive ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900",
               )}
             >
@@ -78,7 +69,7 @@ export function Tabs({ items, label, className, activeId: controlledId, onActive
           role="tabpanel"
           aria-labelledby={`${baseId}-tab-${item.id}`}
           hidden={item.id !== activeId}
-          className="pt-5"
+          className="pt-6"
         >
           {item.content}
         </div>

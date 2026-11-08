@@ -71,6 +71,8 @@ export interface SocialIcon {
 export interface RenderOptions {
   /** Origin that serves /public assets, e.g. "https://signatures.acme.com". */
   assetBaseUrl: string;
+  /** Show placeholder images where none are set. Preview only; never copied. */
+  showPlaceholders?: boolean;
 }
 
 /**

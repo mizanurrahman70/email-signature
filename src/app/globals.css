@@ -4,6 +4,23 @@
   --font-sans: var(--font-geist-sans);
 }
 
+/* Design tokens. "ink" is the deep navy used for the studio rail and dark accents. */
+@theme {
+  --color-ink-950: #070b1a;
+  --color-ink-900: #0d1428;
+  --color-ink-800: #172040;
+  --color-ink-700: #24305a;
+
+  --shadow-studio: 0 1px 2px rgb(15 23 42 / 0.04), 0 12px 40px -12px rgb(15 23 42 / 0.18);
+  --shadow-window: 0 1px 2px rgb(15 23 42 / 0.06), 0 24px 48px -16px rgb(15 23 42 / 0.22);
+}
+
+/* Subtle dot grid for the preview canvas. */
+@utility bg-dots {
+  background-image: radial-gradient(rgb(148 163 184 / 0.35) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
 /* Light-only on purpose: the preview mirrors a white email body. */
 :root {
   color-scheme: light;
@@ -13,4 +30,10 @@ body {
   background: var(--color-slate-50);
   color: var(--color-slate-900);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Thin, unobtrusive scrollbars inside the studio panels. */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225) transparent;
 }

@@ -9,9 +9,11 @@
     "lint": "eslint",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "icons": "node scripts/generate-social-icons.mjs"
+    "icons": "node scripts/generate-social-icons.mjs",
+    "placeholders": "node scripts/generate-placeholders.mjs"
   },
   "dependencies": {
+    "lucide-react": "^1.70.0",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",

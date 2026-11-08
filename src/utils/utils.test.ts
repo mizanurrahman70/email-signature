@@ -61,6 +61,14 @@ describe("keyboard", () => {
     expect(getRovingIndex("End", 0, 3)).toBe(2);
     expect(getRovingIndex("Enter", 0, 3)).toBeNull();
   });
+
+  it("uses up/down for vertical lists and accepts all arrows for 'both'", () => {
+    expect(getRovingIndex("ArrowDown", 0, 3, "vertical")).toBe(1);
+    expect(getRovingIndex("ArrowUp", 0, 3, "vertical")).toBe(2);
+    expect(getRovingIndex("ArrowRight", 0, 3, "vertical")).toBeNull();
+    expect(getRovingIndex("ArrowRight", 0, 3, "both")).toBe(1);
+    expect(getRovingIndex("ArrowDown", 0, 3, "horizontal")).toBeNull();
+  });
 });
 
 describe("error", () => {

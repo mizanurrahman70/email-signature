@@ -36,7 +36,7 @@ export function renderSplitTemplate(vm: SignatureViewModel): string {
 
   const contacts = joinHtml([renderIconContacts(vm), renderSocialIcons(vm)]);
   const contactsCell = contacts
-    ? `<td style="${toInlineStyle({ verticalAlign: "middle", paddingLeft: "20px", borderLeft: verticalDivider(1) })}">${contacts}</td>`
+    ? `<td style="${toInlineStyle({ verticalAlign: "middle", paddingLeft: "20px", borderLeft: verticalDivider(1, vm.primaryColor) })}">${contacts}</td>`
     : "";
 
   const columnCount = [photoCell, identityCell, contactsCell].filter(Boolean).length;

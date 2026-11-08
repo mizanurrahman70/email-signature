@@ -101,6 +101,25 @@ describe("renderSignatureHtml", () => {
     const html = renderSignatureHtml(withState({ images: { logo: "https://res.cloudinary.com/demo/logo.png" } }), OPTIONS);
     expect(html).toContain('src="https://res.cloudinary.com/demo/logo.png"');
   });
+
+  it("shows placeholder images only when asked (preview), never by default (copy)", () => {
+    const state = withState({ images: { photo: "", logo: "" } });
+    const preview = renderSignatureHtml(state, { ...OPTIONS, showPlaceholders: true });
+    const copied = renderSignatureHtml(state, OPTIONS);
+
+    expect(preview).toContain('src="https://signatures.example.com/placeholders/photo.png"');
+    expect(preview).toContain('src="https://signatures.example.com/placeholders/logo.png"');
+    expect(copied).not.toContain("placeholders/");
+  });
+
+  it("prefers real images over placeholders", () => {
+    const state = withState({ images: { photo: "https://res.cloudinary.com/demo/me.png" } });
+    const preview = renderSignatureHtml(state, { ...OPTIONS, showPlaceholders: true });
+
+    expect(preview).toContain('src="https://res.cloudinary.com/demo/me.png"');
+    expect(preview).not.toContain("placeholders/photo.png");
+    expect(preview).toContain("placeholders/logo.png");
+  });
 });
 
 describe("renderSignatureText with optional fields", () => {
@@ -118,7 +137,15 @@ describe("renderSignatureText with optional fields", () => {
 describe("renderSignatureText", () => {
   it("lists non-empty lines", () => {
     expect(renderSignatureText(DEFAULT_SIGNATURE)).toBe(
-      ["Jane Cooper", "Head of Marketing, Acme Inc.", "+1 555 010 2030", "jane@acme.com", "acme.com", "linkedin.com/in/janecooper"].join("\n"),
+      [
+        "Jane Cooper (she/her)",
+        "Head of Marketing, Marketing, Acme Inc.",
+        "+1 555 010 2030 | +1 555 010 4050",
+        "jane@acme.com",
+        "acme.com",
+        "123 Market St, San Francisco",
+        "linkedin.com/in/janecooper",
+      ].join("\n"),
     );
   });
 });

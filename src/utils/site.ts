@@ -11,8 +11,9 @@ export function getSiteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
 }
 
-export function getRenderOptions(): RenderOptions {
-  return { assetBaseUrl: getSiteUrl() };
+/** Copy/export options. Pass `showPlaceholders` only for the live preview. */
+export function getRenderOptions(overrides: Partial<RenderOptions> = {}): RenderOptions {
+  return { assetBaseUrl: getSiteUrl(), ...overrides };
 }
 
 /** True for URLs that email recipients can't reach (e.g. dev servers). */

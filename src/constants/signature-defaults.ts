@@ -4,15 +4,15 @@ import type { SignatureState } from "@/types/signature";
 export const DEFAULT_SIGNATURE: SignatureState = {
   details: {
     fullName: "Jane Cooper",
-    pronouns: "",
+    pronouns: "she/her",
     jobTitle: "Head of Marketing",
-    department: "",
+    department: "Marketing",
     company: "Acme Inc.",
     phone: "+1 555 010 2030",
-    mobile: "",
+    mobile: "+1 555 010 4050",
     email: "jane@acme.com",
     website: "acme.com",
-    address: "",
+    address: "123 Market St, San Francisco",
   },
   social: {
     linkedin: "linkedin.com/in/janecooper",
@@ -27,7 +27,7 @@ export const DEFAULT_SIGNATURE: SignatureState = {
     logo: "",
   },
   style: {
-    templateId: "classic",
+    templateId: "split",
     primaryColor: COLOR_PRESETS[0],
     textColor: "#1f2937",
     fontFamily: FONT_OPTIONS[0].value,
