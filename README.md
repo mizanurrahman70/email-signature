@@ -95,6 +95,15 @@ The live preview renders in a sandboxed iframe so the app's CSS can't affect it,
 
 `GET /api/icons/{phone|email|website|address}?color=rrggbb` returns the icon as a PNG in the accent color, rendered with `sharp` and cached for a year. Email clients don't render SVG, and pre-made PNGs couldn't follow a custom color.
 
+## Handwritten signatures
+
+The **Signature** image field has a "Create handwritten signature" option that opens a modal (native `<dialog>`):
+
+- **Draw freehand:** a canvas pad using Pointer Events, so mouse, touch and stylus all work. Strokes are stored in CSS pixels and drawn as smooth curves, with ink colors, Undo and Clear ([useSignaturePad](src/hooks/useSignaturePad.ts)).
+- **Use fonts:** type a name in one of four script fonts loaded with `next/font` ([fonts.ts](src/components/editor/handwriting/fonts.ts)).
+
+On **Apply**, the drawing is rendered at 3× resolution, cropped to the ink with transparent padding ([utils/canvas.ts](src/utils/canvas.ts)), and uploaded through the normal Cloudinary flow.
+
 ## Placeholder images
 
 Until a photo or logo is added, the live preview fills those slots with gray placeholders (`public/placeholders/`, made by [scripts/generate-placeholders.mjs](scripts/generate-placeholders.mjs)). Only the preview passes `showPlaceholders: true` to the renderer. Copied signatures never include placeholders.

@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageUp, Loader2, Trash2 } from "lucide-react";
+import { ImageUp, Loader2, PenLine, Trash2 } from "lucide-react";
 import { useId, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { FormSection } from "@/components/ui/FormSection";
@@ -9,20 +9,24 @@ import { ACCEPTED_IMAGE_TYPES } from "@/constants/cloudinary";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import type { ImageKind } from "@/types/signature";
 import { cn } from "@/utils/cn";
+import { HandwritingModal } from "./handwriting/HandwritingModal";
 import { useSignature } from "./SignatureContext";
 
 interface ImageUploadFieldProps {
   kind: ImageKind;
   label: string;
   hint: string;
+  /** Offer "Create handwritten signature" (draw or type) alongside upload. */
+  allowHandwriting?: boolean;
 }
 
 /** Drop zone + file picker + URL fallback for one signature image. */
-export function ImageUploadField({ kind, label, hint }: ImageUploadFieldProps) {
+export function ImageUploadField({ kind, label, hint, allowHandwriting = false }: ImageUploadFieldProps) {
   const { state, actions } = useSignature();
   const inputRef = useRef<HTMLInputElement>(null);
   const hintId = useId();
   const [isDragging, setIsDragging] = useState(false);
+  const [isHandwritingOpen, setIsHandwritingOpen] = useState(false);
   const imageUrl = state.images[kind];
   const { upload, isPending, error } = useImageUpload(kind, (url) => actions.setImage(kind, url));
 
@@ -38,6 +42,11 @@ export function ImageUploadField({ kind, label, hint }: ImageUploadFieldProps) {
     setIsDragging(false);
     const file = event.dataTransfer.files[0];
     if (file) upload(file);
+  }
+
+  function handleHandwritingApply(file: File) {
+    setIsHandwritingOpen(false);
+    upload(file);
   }
 
   return (
@@ -82,6 +91,31 @@ export function ImageUploadField({ kind, label, hint }: ImageUploadFieldProps) {
           </div>
         </div>
       </div>
+
+      {allowHandwriting && (
+        <>
+          <button
+            type="button"
+            onClick={() => setIsHandwritingOpen(true)}
+            disabled={isPending}
+            className="group flex items-center gap-3 rounded-2xl bg-white p-3 text-left ring-1 ring-slate-200 transition hover:ring-brand-300 focus-visible:outline-2 focus-visible:outline-brand-500 disabled:opacity-60"
+          >
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700 ring-1 ring-brand-100 transition group-hover:bg-brand-100">
+              <PenLine className="size-[18px]" aria-hidden="true" />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[13px] font-semibold text-slate-900">Create handwritten signature</span>
+              <span className="block text-xs text-slate-500">Draw with your mouse or finger, or type it in a script font.</span>
+            </span>
+          </button>
+          <HandwritingModal
+            open={isHandwritingOpen}
+            onClose={() => setIsHandwritingOpen(false)}
+            defaultName={state.details.fullName}
+            onApply={handleHandwritingApply}
+          />
+        </>
+      )}
 
       {error && (
         <p role="alert" className="text-[13px] text-red-600">

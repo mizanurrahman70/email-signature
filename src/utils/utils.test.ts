@@ -97,3 +97,34 @@ describe("svg", async () => {
     expect(svg).toContain('<path d="M0 0"/>');
   });
 });
+
+describe("canvas", async () => {
+  const { getContentBounds, getMidpoint } = await import("./canvas");
+
+  const pixels = (width: number, height: number, inked: Array<[number, number]>) => {
+    const data = new Uint8ClampedArray(width * height * 4);
+    inked.forEach(([x, y]) => (data[(y * width + x) * 4 + 3] = 255));
+    return { data, width, height };
+  };
+
+  it("finds the bounding box of inked pixels", () => {
+    expect(getContentBounds(pixels(10, 8, [[2, 3], [6, 5], [4, 1]]))).toEqual({ x: 2, y: 1, width: 5, height: 5 });
+  });
+
+  it("returns null for an empty canvas", () => {
+    expect(getContentBounds(pixels(4, 4, []))).toBeNull();
+  });
+
+  it("computes midpoints for curve smoothing", () => {
+    expect(getMidpoint({ x: 0, y: 0 }, { x: 4, y: 2 })).toEqual({ x: 2, y: 1 });
+  });
+});
+
+describe("fonts", async () => {
+  const { getPrimaryFontFamily } = await import("./fonts");
+
+  it("keeps only the first family, with its quotes", () => {
+    expect(getPrimaryFontFamily("'Great Vibes', 'Great Vibes Fallback'")).toBe("'Great Vibes'");
+    expect(getPrimaryFontFamily("Arial")).toBe("Arial");
+  });
+});
