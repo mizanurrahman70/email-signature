@@ -20,9 +20,12 @@ const signatureSchema = z.object({
   details: z
     .object({
       fullName: text,
+      pronouns: text,
       jobTitle: text,
+      department: text,
       company: text,
       phone: text,
+      mobile: text,
       email: text,
       website: text,
       address: text,

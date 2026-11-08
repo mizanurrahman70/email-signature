@@ -9,7 +9,7 @@ export function DetailsForm() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      {DETAIL_FIELDS.map(({ field, label, placeholder, type, autoComplete }) => (
+      {DETAIL_FIELDS.map(({ field, label, placeholder, type, autoComplete, wide }) => (
         <TextField
           key={field}
           label={label}
@@ -18,7 +18,7 @@ export function DetailsForm() {
           autoComplete={autoComplete}
           value={state.details[field]}
           onValueChange={(value) => actions.updateDetail(field, value)}
-          className={field === "address" ? "sm:col-span-2" : undefined}
+          className={wide ? "sm:col-span-2" : undefined}
         />
       ))}
     </div>

@@ -14,13 +14,22 @@ interface TabsProps {
   items: ReadonlyArray<TabItem>;
   label: string;
   className?: string;
+  /** Pass with `onActiveIdChange` to control the selected tab from outside. */
+  activeId?: string;
+  onActiveIdChange?: (id: string) => void;
 }
 
 /** Accessible tabs following the WAI-ARIA pattern (arrow keys, Home/End). */
-export function Tabs({ items, label, className }: TabsProps) {
+export function Tabs({ items, label, className, activeId: controlledId, onActiveIdChange }: TabsProps) {
   const baseId = useId();
-  const [activeId, setActiveId] = useState(items[0]?.id);
+  const [uncontrolledId, setUncontrolledId] = useState(items[0]?.id);
+  const activeId = controlledId ?? uncontrolledId;
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  function setActiveId(id: string) {
+    setUncontrolledId(id);
+    onActiveIdChange?.(id);
+  }
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const nextIndex = getRovingIndex(event.key, index, items.length);

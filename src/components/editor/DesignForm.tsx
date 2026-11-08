@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { COLOR_PRESETS, FONT_OPTIONS, TEMPLATE_OPTIONS, TEXT_COLOR_PRESETS } from "@/constants/signature-options";
+import { COLOR_PRESETS, FONT_OPTIONS, TEXT_COLOR_PRESETS } from "@/constants/signature-options";
 import type { ColorField } from "@/types/signature";
 import { cn } from "@/utils/cn";
 import { isSameColor } from "@/utils/color";
@@ -10,46 +10,10 @@ import { useSignature } from "./SignatureContext";
 export function DesignForm() {
   return (
     <div className="flex flex-col gap-6">
-      <TemplatePicker />
       <ColorPicker field="primaryColor" label="Accent color" presets={COLOR_PRESETS} />
       <ColorPicker field="textColor" label="Text color" presets={TEXT_COLOR_PRESETS} />
       <FontPicker />
     </div>
-  );
-}
-
-function TemplatePicker() {
-  const { state, actions } = useSignature();
-
-  return (
-    <fieldset>
-      <legend className="mb-2 text-sm font-medium text-slate-700">Template</legend>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {TEMPLATE_OPTIONS.map((template) => {
-          const isSelected = state.style.templateId === template.id;
-          return (
-            <label
-              key={template.id}
-              className={cn(
-                "flex cursor-pointer flex-col gap-1 rounded-xl border p-4 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-blue-600",
-                isSelected ? "border-blue-600 bg-blue-50" : "border-slate-200 hover:border-slate-300",
-              )}
-            >
-              <input
-                type="radio"
-                name="template"
-                value={template.id}
-                checked={isSelected}
-                onChange={() => actions.updateStyle({ templateId: template.id })}
-                className="sr-only"
-              />
-              <span className="text-sm font-semibold text-slate-900">{template.name}</span>
-              <span className="text-xs text-slate-500">{template.description}</span>
-            </label>
-          );
-        })}
-      </div>
-    </fieldset>
   );
 }
 

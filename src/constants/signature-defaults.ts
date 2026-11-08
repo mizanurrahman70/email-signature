@@ -4,9 +4,12 @@ import type { SignatureState } from "@/types/signature";
 export const DEFAULT_SIGNATURE: SignatureState = {
   details: {
     fullName: "Jane Cooper",
+    pronouns: "",
     jobTitle: "Head of Marketing",
+    department: "",
     company: "Acme Inc.",
     phone: "+1 555 010 2030",
+    mobile: "",
     email: "jane@acme.com",
     website: "acme.com",
     address: "",

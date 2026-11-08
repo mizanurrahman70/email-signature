@@ -84,3 +84,14 @@ describe("site", async () => {
     expect(toAbsoluteUrl("/x.png", "not a url")).toBe("");
   });
 });
+
+describe("svg", async () => {
+  const { buildStrokeIconSvg } = await import("./svg");
+
+  it("wraps markup with size and stroke color", () => {
+    const svg = buildStrokeIconSvg('<path d="M0 0"/>', "#ff0000", 48);
+    expect(svg).toContain('width="48"');
+    expect(svg).toContain('stroke="#ff0000"');
+    expect(svg).toContain('<path d="M0 0"/>');
+  });
+});

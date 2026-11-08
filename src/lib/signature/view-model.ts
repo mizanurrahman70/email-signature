@@ -1,8 +1,18 @@
 import { DEFAULT_SIGNATURE } from "@/constants/signature-defaults";
-import { FONT_OPTIONS, MUTED_TEXT_COLOR, SOCIAL_ICON_DIR, SOCIAL_OPTIONS } from "@/constants/signature-options";
+import {
+  CONTACT_ICON_ENDPOINT,
+  CONTACT_ICON_NAMES,
+  FONT_OPTIONS,
+  MUTED_TEXT_COLOR,
+  SOCIAL_ICON_DIR,
+  SOCIAL_OPTIONS,
+} from "@/constants/signature-options";
 import type {
+  ContactIconName,
   ContactLine,
+  ContactLink,
   RenderOptions,
+  SignatureDetails,
   SignatureState,
   SignatureViewModel,
   SocialIcon,
@@ -18,32 +28,61 @@ export function buildViewModel(
   { assetBaseUrl }: RenderOptions,
 ): SignatureViewModel {
   const fallbackStyle = DEFAULT_SIGNATURE.style;
+  const primaryColor = safeHexColor(style.primaryColor, fallbackStyle.primaryColor);
 
   return {
-    name: escapeHtml(details.fullName.trim()),
-    jobTitle: escapeHtml(details.jobTitle.trim()),
-    company: escapeHtml(details.company.trim()),
-    address: escapeHtml(details.address.trim()),
-    contacts: buildContacts(details.phone, details.email, details.website),
+    name: escapeText(details.fullName),
+    pronouns: escapeText(details.pronouns),
+    jobTitle: escapeText(details.jobTitle),
+    department: escapeText(details.department),
+    company: escapeText(details.company),
+    contacts: buildContacts(details),
+    contactIcons: buildContactIcons(primaryColor, assetBaseUrl),
     socials: buildSocials(social, assetBaseUrl),
     photoUrl: toImageUrl(images.photo),
     logoUrl: toImageUrl(images.logo),
-    primaryColor: safeHexColor(style.primaryColor, fallbackStyle.primaryColor),
+    primaryColor,
     textColor: safeHexColor(style.textColor, fallbackStyle.textColor),
     mutedColor: MUTED_TEXT_COLOR,
     fontFamily: ALLOWED_FONTS.has(style.fontFamily) ? style.fontFamily : fallbackStyle.fontFamily,
   };
 }
 
-function buildContacts(phone: string, email: string, website: string): ContactLine[] {
+function escapeText(value: string): string {
+  return escapeHtml(value.trim());
+}
+
+function buildContacts({ phone, mobile, email, website, address }: SignatureDetails): ContactLine[] {
   const websiteHref = normalizeWebUrl(website);
   const candidates: ContactLine[] = [
-    { label: "P", text: escapeHtml(phone.trim()), href: toTelHref(phone) },
-    { label: "E", text: escapeHtml(email.trim()), href: toMailtoHref(email) },
-    { label: "W", text: escapeHtml(toDisplayUrl(websiteHref)), href: websiteHref },
+    {
+      icon: "phone",
+      label: "P",
+      links: [phone, mobile].map((number) => ({ text: escapeText(number), href: toTelHref(number) })),
+    },
+    { icon: "email", label: "E", links: [{ text: escapeText(email), href: toMailtoHref(email) }] },
+    { icon: "website", label: "W", links: [{ text: escapeHtml(toDisplayUrl(websiteHref)), href: websiteHref }] },
+    { icon: "address", label: "A", links: [{ text: escapeText(address), href: "" }] },
   ];
 
-  return candidates.filter((contact) => contact.text && contact.href);
+  return candidates
+    .map((contact) => ({ ...contact, links: contact.links.filter(isUsableLink(contact.icon)) }))
+    .filter((contact) => contact.links.length > 0);
+}
+
+/** Addresses are plain text; every other contact needs a valid link to be shown. */
+function isUsableLink(icon: ContactIconName) {
+  return (link: ContactLink) => Boolean(link.text) && (icon === "address" || Boolean(link.href));
+}
+
+function buildContactIcons(color: string, assetBaseUrl: string): Record<ContactIconName, string> {
+  const colorParam = color.slice(1).toLowerCase();
+  return Object.fromEntries(
+    CONTACT_ICON_NAMES.map((name) => [
+      name,
+      toAbsoluteUrl(`${CONTACT_ICON_ENDPOINT}/${name}?color=${colorParam}`, assetBaseUrl),
+    ]),
+  ) as Record<ContactIconName, string>;
 }
 
 function buildSocials(social: SignatureState["social"], assetBaseUrl: string): SocialIcon[] {

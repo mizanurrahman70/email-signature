@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { TEMPLATE_IDS } from "@/constants/signature-options";
 import { DEFAULT_SIGNATURE } from "@/constants/signature-defaults";
 import { renderSignatureHtml, renderSignatureText } from "./render";
 import { parseSignatureState } from "./schema";
@@ -16,7 +17,7 @@ function withState(overrides: Partial<{ [K in keyof SignatureState]: Partial<Sig
 }
 
 describe("renderSignatureHtml", () => {
-  it.each(["classic", "stacked"] as const)("renders the %s template with contact links", (templateId) => {
+  it.each(TEMPLATE_IDS)("renders the %s template with contact links", (templateId) => {
     const html = renderSignatureHtml(withState({ style: { templateId } }), OPTIONS);
 
     expect(html).toContain("Jane Cooper");
@@ -33,6 +34,37 @@ describe("renderSignatureHtml", () => {
     expect(html).toContain('src="https://signatures.example.com/social-icons/github.png"');
     expect(html).toContain('alt="GitHub"');
     expect(html).not.toContain("social-icons/x.png");
+  });
+
+  it.each(TEMPLATE_IDS)("shows pronouns, department and both phone numbers in %s", (templateId) => {
+    const html = renderSignatureHtml(
+      withState({
+        details: { pronouns: "she/her", department: "Growth", mobile: "+1 555 999 0000" },
+        style: { templateId },
+      }),
+      OPTIONS,
+    );
+
+    expect(html).toContain("she/her");
+    expect(html).toContain("Growth");
+    expect(html).toContain('href="tel:+15559990000"');
+  });
+
+  it.each(["split", "reversed"] as const)("uses accent-colored contact icons in %s", (templateId) => {
+    const html = renderSignatureHtml(withState({ style: { templateId, primaryColor: "#BE123C" } }), OPTIONS);
+
+    expect(html).toContain('src="https://signatures.example.com/api/icons/phone?color=be123c"');
+    expect(html).toContain('src="https://signatures.example.com/api/icons/email?color=be123c"');
+  });
+
+  it("renders minimal without any images", () => {
+    const html = renderSignatureHtml(
+      withState({ style: { templateId: "minimal" }, images: { photo: "https://x.com/p.png", logo: "https://x.com/l.png" } }),
+      OPTIONS,
+    );
+
+    expect(html).not.toContain("<img");
+    expect(html).toContain(">LinkedIn</a>");
   });
 
   it("escapes user input", () => {
@@ -68,6 +100,18 @@ describe("renderSignatureHtml", () => {
   it("includes https images", () => {
     const html = renderSignatureHtml(withState({ images: { logo: "https://res.cloudinary.com/demo/logo.png" } }), OPTIONS);
     expect(html).toContain('src="https://res.cloudinary.com/demo/logo.png"');
+  });
+});
+
+describe("renderSignatureText with optional fields", () => {
+  it("includes pronouns, department and mobile", () => {
+    const text = renderSignatureText(
+      withState({ details: { pronouns: "she/her", department: "Growth", mobile: "+1 555 999 0000" } }),
+    );
+
+    expect(text).toContain("Jane Cooper (she/her)");
+    expect(text).toContain("Head of Marketing, Growth, Acme Inc.");
+    expect(text).toContain("+1 555 010 2030 | +1 555 999 0000");
   });
 });
 

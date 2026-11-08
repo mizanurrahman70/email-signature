@@ -1,14 +1,18 @@
-import type { IMAGE_KINDS, SOCIAL_NETWORKS, TEMPLATE_IDS } from "@/constants/signature-options";
+import type { CONTACT_ICON_NAMES, IMAGE_KINDS, SOCIAL_NETWORKS, TEMPLATE_IDS } from "@/constants/signature-options";
 
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 export type SocialNetwork = (typeof SOCIAL_NETWORKS)[number];
 export type ImageKind = (typeof IMAGE_KINDS)[number];
+export type ContactIconName = (typeof CONTACT_ICON_NAMES)[number];
 
 export interface SignatureDetails {
   fullName: string;
+  pronouns: string;
   jobTitle: string;
+  department: string;
   company: string;
   phone: string;
+  mobile: string;
   email: string;
   website: string;
   address: string;
@@ -43,11 +47,18 @@ export type SignatureAction =
   | { type: "updateStyle"; style: Partial<SignatureStyle> }
   | { type: "reset" };
 
-export interface ContactLine {
-  label: string;
+export interface ContactLink {
   /** Escaped, ready to embed in HTML. */
   text: string;
+  /** Empty for plain text (e.g. an address). */
   href: string;
+}
+
+export interface ContactLine {
+  icon: ContactIconName;
+  /** Short text label for templates without icons, e.g. "P". */
+  label: string;
+  links: ContactLink[];
 }
 
 export interface SocialIcon {
@@ -68,10 +79,14 @@ export interface RenderOptions {
  */
 export interface SignatureViewModel {
   name: string;
+  pronouns: string;
   jobTitle: string;
+  department: string;
   company: string;
-  address: string;
+  /** Phone, email, website and address, in display order; empty ones omitted. */
   contacts: ContactLine[];
+  /** Absolute URLs of accent-colored contact icon PNGs. */
+  contactIcons: Record<ContactIconName, string>;
   socials: SocialIcon[];
   photoUrl: string;
   logoUrl: string;

@@ -29,7 +29,8 @@ Without Cloudinary credentials the app still works: uploads show an error, and u
 src/
 ├── app/                    # Routes only
 │   ├── page.tsx            #   Static page; editor inside <Suspense>
-│   └── api/upload-signature/route.ts
+│   ├── api/upload-signature/route.ts  # signs Cloudinary uploads
+│   └── api/icons/[name]/route.ts      # accent-colored contact icon PNGs
 ├── components/             # React UI, grouped by feature
 │   ├── editor/             #   Forms, context, browser-only editor root
 │   ├── preview/            #   Live preview + copy buttons
@@ -55,7 +56,7 @@ src/
 └── lib/signature/          # Domain logic
     ├── view-model.ts       #   sanitize + normalize input
     ├── render.ts  copy.ts  reducer.ts  schema.ts
-    └── templates/          #   classic, stacked + shared email-safe parts
+    └── templates/          #   classic, stacked, split, centered, reversed, minimal + shared parts
 ```
 
 **Rules of thumb:** components render and call functions; data lives in `constants/`; types in `types/`; reusable logic in `utils/` (pure) or `services/` (network/server). Everything imports with `@/…`, and there are no barrel `index.ts` files, so the bundler only pulls in what's used.
@@ -66,6 +67,25 @@ src/
 - **Suspense + `use`.** The editor restores the draft from `localStorage`, so it calls `use(browser())` and the server prerenders the `<EditorSkeleton />` fallback. The rest of the page (header, install guides) is static and indexable. Context is read with `use(SignatureContext)`.
 - **Responsive typing.** The preview renders from `useDeferredValue(state)`; uploads run in `useTransition`.
 - **Persistence.** The draft is saved to `localStorage` (debounced) and validated with Zod when it's restored. Corrupt fields fall back one by one.
+
+## Templates
+
+| Template | Layout |
+| --- | --- |
+| Classic | Photo left, accent divider, labeled contacts (P:/E:/W:) |
+| Stacked | Logo on top, inline contacts, accent bar underneath |
+| Split | Photo, name block, divider, contacts with icons; rule and logo below |
+| Centered | Everything centered under a round photo |
+| Reversed | Details with icons on the left; photo and logo on the right |
+| Minimal | Text only, no images |
+
+To add one: write a `render…Template(vm)` in `lib/signature/templates/`, then register it in `TEMPLATE_IDS` / `TEMPLATE_OPTIONS` (constants), `TEMPLATE_RENDERERS` (render.ts) and `THUMBNAILS` (TemplateThumbnail.tsx).
+
+The live preview renders in a sandboxed iframe so the app's CSS can't affect it, the way an email client shows it.
+
+## Contact icons
+
+`GET /api/icons/{phone|email|website|address}?color=rrggbb` returns the icon as a PNG in the accent color, rendered with `sharp` and cached for a year. Email clients don't render SVG, and pre-made PNGs couldn't follow a custom color.
 
 ## Social icons
 

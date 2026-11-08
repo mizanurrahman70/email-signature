@@ -1,7 +1,11 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useMemo } from "react";
+import { useIframeAutoHeight } from "@/hooks/useIframeAutoHeight";
 import { cn } from "@/utils/cn";
+import { buildPreviewDocument } from "@/utils/html";
+
+const INITIAL_HEIGHT = 120;
 
 interface SignaturePreviewProps {
   html: string;
@@ -10,9 +14,13 @@ interface SignaturePreviewProps {
 
 /**
  * Renders the exact HTML that gets copied, inside a mock email window.
- * The HTML is built from escaped, validated values in the view model.
+ * A sandboxed iframe keeps the app's CSS out, so the preview matches what
+ * email clients show. No scripts run; same-origin is only for measuring height.
  */
 export const SignaturePreview = memo(function SignaturePreview({ html, isStale }: SignaturePreviewProps) {
+  const srcDoc = useMemo(() => buildPreviewDocument(html), [html]);
+  const { iframeRef, height, handleLoad } = useIframeAutoHeight(INITIAL_HEIGHT);
+
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
       <div className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-4 py-2.5">
@@ -36,11 +44,14 @@ export const SignaturePreview = memo(function SignaturePreview({ html, isStale }
           <br />
           Thanks for your time today. Talk soon!
         </p>
-        <div
-          aria-live="polite"
-          aria-label="Signature preview"
-          className={cn("overflow-x-auto transition-opacity", isStale && "opacity-70")}
-          dangerouslySetInnerHTML={{ __html: html }}
+        <iframe
+          ref={iframeRef}
+          title="Signature preview"
+          srcDoc={srcDoc}
+          sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+          onLoad={handleLoad}
+          style={{ height }}
+          className={cn("block w-full border-0 transition-opacity", isStale && "opacity-70")}
         />
       </div>
     </div>

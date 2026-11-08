@@ -1,6 +1,6 @@
-import { escapeHtml, joinHtml, toInlineStyle } from "@/utils/html";
-import { SOCIAL_ICON_SIZE } from "@/constants/signature-options";
-import type { SignatureViewModel } from "@/types/signature";
+import { CONTACT_ICON_SIZE, SOCIAL_ICON_SIZE } from "@/constants/signature-options";
+import type { ContactLine, SignatureViewModel } from "@/types/signature";
+import { escapeHtml, joinHtml, toInlineStyle, type InlineStyle } from "@/utils/html";
 
 /**
  * Building blocks for email-safe HTML: tables for layout, inline styles only,
@@ -10,9 +10,31 @@ import type { SignatureViewModel } from "@/types/signature";
 
 export const TABLE_RESET = 'cellpadding="0" cellspacing="0" border="0" role="presentation"';
 
+const BORDER_COLOR = "#d1d5db";
+
+export function renderTable(rows: string, style: InlineStyle = {}, attributes = ""): string {
+  const styleAttr = toInlineStyle(style);
+  return `<table ${TABLE_RESET}${attributes ? ` ${attributes}` : ""}${styleAttr ? ` style="${styleAttr}"` : ""}>${rows}</table>`;
+}
+
+/** Root table styles shared by every template. */
+export function rootStyle(vm: SignatureViewModel): InlineStyle {
+  return { fontFamily: vm.fontFamily, fontSize: "14px", lineHeight: "1.45", color: vm.textColor };
+}
+
+/** Wraps content in a centered table; `margin: auto` doesn't work in Outlook. */
+export function centerBlock(html: string): string {
+  return html ? renderTable(`<tr><td>${html}</td></tr>`, {}, 'align="center"') : "";
+}
+
+export function verticalDivider(width: number, color = BORDER_COLOR): string {
+  return `${width}px solid ${color}`;
+}
+
+/** A link, or plain text when there's no href (e.g. an address). */
 export function renderLink(href: string, text: string, color: string): string {
   const style = toInlineStyle({ color, textDecoration: "none" });
-  return `<a href="${escapeHtml(href)}" style="${style}">${text}</a>`;
+  return href ? `<a href="${escapeHtml(href)}" style="${style}">${text}</a>` : `<span style="${style}">${text}</span>`;
 }
 
 export function renderImage(src: string, alt: string, width: number, height?: number, radius = 0): string {
@@ -27,40 +49,120 @@ export function renderImage(src: string, alt: string, width: number, height?: nu
   return `<img src="${escapeHtml(src)}" alt="${alt}" width="${width}"${heightAttr} style="${style}" />`;
 }
 
-export function renderContactLines(vm: SignatureViewModel): string {
+export function renderPhoto(vm: SignatureViewModel, size: number): string {
+  return vm.photoUrl ? renderImage(vm.photoUrl, vm.name, size, size, size / 2) : "";
+}
+
+export function renderLogo(vm: SignatureViewModel, width: number): string {
+  return vm.logoUrl ? renderImage(vm.logoUrl, vm.company || "Logo", width) : "";
+}
+
+export function renderSpacer(height: number): string {
+  return `<div style="${toInlineStyle({ height: `${height}px`, lineHeight: `${height}px`, fontSize: 0 })}">&nbsp;</div>`;
+}
+
+/** A styled block of text; renders nothing when the content is empty. */
+export function renderText(html: string, style: InlineStyle): string {
+  return html ? `<div style="${toInlineStyle(style)}">${html}</div>` : "";
+}
+
+interface NameOptions {
+  fontSize?: number;
+  color?: string;
+  showPronouns?: boolean;
+}
+
+export function renderName(vm: SignatureViewModel, { fontSize = 18, color, showPronouns = true }: NameOptions = {}): string {
+  const pronouns =
+    showPronouns && vm.pronouns
+      ? ` <span style="${toInlineStyle({ fontSize: "12px", fontWeight: "normal", color: vm.mutedColor })}">(${vm.pronouns})</span>`
+      : "";
+  return renderText(vm.name && `${vm.name}${pronouns}`, {
+    fontSize: `${fontSize}px`,
+    fontWeight: "bold",
+    color: color ?? vm.textColor,
+  });
+}
+
+export function renderTitleLine(vm: SignatureViewModel, separator: string): string {
+  return joinHtml([vm.jobTitle, vm.department, vm.company], separator);
+}
+
+export function renderMutedText(vm: SignatureViewModel, html: string): string {
+  return renderText(html, { fontSize: "13px", color: vm.mutedColor });
+}
+
+/** Each phone number, email or URL stays on one line; lines may break between values. Addresses wrap freely. */
+function renderContactLinks(contact: ContactLine, vm: SignatureViewModel): string {
+  return contact.links
+    .map((link) => {
+      const html = renderLink(link.href, link.text, vm.textColor);
+      return contact.icon === "address" ? html : `<span style="white-space:nowrap">${html}</span>`;
+    })
+    .join(" | ");
+}
+
+function withoutAddress(vm: SignatureViewModel): ContactLine[] {
+  return vm.contacts.filter((contact) => contact.icon !== "address");
+}
+
+export function renderAddress(vm: SignatureViewModel): string {
+  const address = vm.contacts.find((contact) => contact.icon === "address");
+  return address ? renderMutedText(vm, address.links[0].text) : "";
+}
+
+/** "P: +1 555…" lines with accent-colored labels. */
+export function renderLabeledContacts(vm: SignatureViewModel): string {
   return vm.contacts
     .map((contact) => {
       const label = `<span style="${toInlineStyle({ color: vm.primaryColor, fontWeight: "bold" })}">${contact.label}:</span>`;
-      const line = `${label}&nbsp;${renderLink(contact.href, contact.text, vm.textColor)}`;
-      return `<div style="${toInlineStyle({ margin: 0, fontSize: "13px" })}">${line}</div>`;
+      return renderText(`${label}&nbsp;${renderContactLinks(contact, vm)}`, { fontSize: "13px" });
     })
     .join("");
 }
 
-export function renderInlineContacts(vm: SignatureViewModel): string {
-  const separator = `<span style="${toInlineStyle({ color: vm.primaryColor })}">&nbsp;|&nbsp;</span>`;
-  return vm.contacts.map((contact) => renderLink(contact.href, contact.text, vm.textColor)).join(separator);
+/** Phone, email and website on one line. Pair with `renderAddress`. */
+export function renderInlineContacts(vm: SignatureViewModel, separator = "|"): string {
+  const divider = `<span style="${toInlineStyle({ color: vm.primaryColor })}">&nbsp;${separator}&nbsp;</span>`;
+  return withoutAddress(vm)
+    .map((contact) => renderContactLinks(contact, vm))
+    .join(divider);
+}
+
+/** One row per contact with an accent-colored icon, as in the Split template. */
+export function renderIconContacts(vm: SignatureViewModel): string {
+  if (vm.contacts.length === 0) return "";
+
+  const rows = vm.contacts
+    .map((contact) => {
+      const icon = renderImage(vm.contactIcons[contact.icon], contact.label, CONTACT_ICON_SIZE, CONTACT_ICON_SIZE);
+      const iconCell = `<td width="${CONTACT_ICON_SIZE}" style="${toInlineStyle({ verticalAlign: "middle", padding: "3px 10px 3px 0" })}">${icon}</td>`;
+      const textCell = `<td style="${toInlineStyle({ verticalAlign: "middle", fontSize: "13px", padding: "3px 0" })}">${renderContactLinks(contact, vm)}</td>`;
+      return `<tr>${iconCell}${textCell}</tr>`;
+    })
+    .join("");
+
+  return renderTable(rows);
 }
 
 /** Brand-colored PNG icons; alt text keeps them meaningful when images are blocked. */
-export function renderSocialIcons(vm: SignatureViewModel): string {
+export function renderSocialIcons(vm: SignatureViewModel, align: "left" | "center" = "left"): string {
   if (vm.socials.length === 0) return "";
 
   const cells = vm.socials
     .map((social) => {
       const icon = renderImage(social.iconUrl, social.label, SOCIAL_ICON_SIZE, SOCIAL_ICON_SIZE);
       const link = `<a href="${escapeHtml(social.href)}" title="${social.label}" style="text-decoration:none">${icon}</a>`;
-      return `<td style="padding-right:6px">${link}</td>`;
+      return `<td style="padding:0 3px">${link}</td>`;
     })
     .join("");
 
-  return `<table ${TABLE_RESET} style="margin-top:10px"><tr>${cells}</tr></table>`;
+  const alignAttr = align === "center" ? 'align="center"' : "";
+  return renderTable(`<tr>${cells}</tr>`, { marginTop: "10px", marginLeft: align === "left" ? "-3px" : undefined }, alignAttr);
 }
 
-export function renderTitleLine(vm: SignatureViewModel, separator: string): string {
-  return joinHtml([vm.jobTitle, vm.company], separator);
-}
-
-export function renderSpacer(height: number): string {
-  return `<div style="${toInlineStyle({ height: `${height}px`, lineHeight: `${height}px`, fontSize: 0 })}">&nbsp;</div>`;
+/** Social profiles as text links, for image-free templates. */
+export function renderSocialTextLinks(vm: SignatureViewModel): string {
+  const links = vm.socials.map((social) => renderLink(social.href, social.label, vm.primaryColor));
+  return renderText(links.join("&nbsp;&middot;&nbsp;"), { fontSize: "12px", marginTop: "6px" });
 }

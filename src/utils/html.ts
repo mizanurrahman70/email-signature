@@ -29,3 +29,17 @@ function toKebabCase(value: string): string {
 export function joinHtml(parts: ReadonlyArray<string | false | null | undefined>, separator = ""): string {
   return parts.filter(Boolean).join(separator);
 }
+
+/**
+ * A standalone HTML document for previewing email markup in an iframe,
+ * isolated from the app's CSS the way an email client would show it.
+ * Links open in a new tab.
+ */
+export function buildPreviewDocument(bodyHtml: string): string {
+  return [
+    "<!doctype html>",
+    '<html><head><meta charset="utf-8"><base target="_blank">',
+    "<style>html,body{margin:0;padding:0;background:#ffffff}</style>",
+    `</head><body>${bodyHtml}</body></html>`,
+  ].join("");
+}

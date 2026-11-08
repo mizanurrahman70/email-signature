@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useDeferredValue, useMemo } from "react";
+import { use, useDeferredValue, useMemo, useState } from "react";
 import { browser } from "react-dom";
 import { CopyActions } from "@/components/preview/CopyActions";
 import { SignaturePreview } from "@/components/preview/SignaturePreview";
@@ -15,13 +15,9 @@ import { DetailsForm } from "./DetailsForm";
 import { ImagesForm } from "./ImagesForm";
 import { SignatureProvider, useSignature } from "./SignatureContext";
 import { SocialForm } from "./SocialForm";
+import { TemplatePicker } from "./TemplatePicker";
 
-const EDITOR_TABS: ReadonlyArray<TabItem> = [
-  { id: "details", label: "Details", content: <DetailsForm /> },
-  { id: "social", label: "Social", content: <SocialForm /> },
-  { id: "images", label: "Images", content: <ImagesForm /> },
-  { id: "design", label: "Design", content: <DesignForm /> },
-];
+type EditorTabId = "template" | "details" | "social" | "images" | "design";
 
 /**
  * Browser-only: the draft lives in localStorage, so the first render can't
@@ -44,6 +40,19 @@ export function SignatureEditor() {
 
 function EditorPanel() {
   const { actions } = useSignature();
+  const [activeTab, setActiveTab] = useState<EditorTabId>("template");
+
+  // Step 1 is picking a template; "Continue" moves on to the details form.
+  const tabs = useMemo<ReadonlyArray<TabItem>>(
+    () => [
+      { id: "template", label: "Template", content: <TemplatePicker onContinue={() => setActiveTab("details")} /> },
+      { id: "details", label: "Details", content: <DetailsForm /> },
+      { id: "social", label: "Social", content: <SocialForm /> },
+      { id: "images", label: "Images", content: <ImagesForm /> },
+      { id: "design", label: "Design", content: <DesignForm /> },
+    ],
+    [],
+  );
 
   return (
     <Card
@@ -55,7 +64,12 @@ function EditorPanel() {
         </Button>
       }
     >
-      <Tabs items={EDITOR_TABS} label="Signature settings" />
+      <Tabs
+        items={tabs}
+        label="Signature settings"
+        activeId={activeTab}
+        onActiveIdChange={(id) => setActiveTab(id as EditorTabId)}
+      />
     </Card>
   );
 }
