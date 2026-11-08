@@ -15,7 +15,7 @@ export const DEFAULT_SIGNATURE: SignatureState = {
     address: "123 Market St, San Francisco",
   },
   social: {
-    linkedin: "linkedin.com/in/janecooper",
+    linkedin: "",
     x: "",
     facebook: "",
     instagram: "",

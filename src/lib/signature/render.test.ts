@@ -25,12 +25,17 @@ describe("renderSignatureHtml", () => {
     expect(html).toContain('href="mailto:jane@acme.com"');
     expect(html).toContain('href="tel:+15550102030"');
     expect(html).toContain('href="https://acme.com/"');
-    expect(html).toContain('href="https://linkedin.com/in/janecooper"');
+    // New signatures start without social profiles.
+    expect(html).not.toContain("social-icons/");
   });
 
   it("links social profiles with hosted brand icons", () => {
-    const html = renderSignatureHtml(withState({ social: { github: "github.com/jane" } }), OPTIONS);
+    const html = renderSignatureHtml(
+      withState({ social: { linkedin: "linkedin.com/in/jane", github: "github.com/jane" } }),
+      OPTIONS,
+    );
 
+    expect(html).toContain('href="https://linkedin.com/in/jane"');
     expect(html).toContain('src="https://signatures.example.com/social-icons/linkedin.png"');
     expect(html).toContain('src="https://signatures.example.com/social-icons/github.png"');
     expect(html).toContain('alt="GitHub"');
@@ -81,7 +86,11 @@ describe("renderSignatureHtml", () => {
 
   it("renders minimal without any images", () => {
     const html = renderSignatureHtml(
-      withState({ style: { templateId: "minimal" }, images: { photo: "https://x.com/p.png", logo: "https://x.com/l.png" } }),
+      withState({
+        style: { templateId: "minimal" },
+        images: { photo: "https://x.com/p.png", logo: "https://x.com/l.png" },
+        social: { linkedin: "linkedin.com/in/jane" },
+      }),
       OPTIONS,
     );
 
@@ -166,7 +175,6 @@ describe("renderSignatureText", () => {
         "jane@acme.com",
         "acme.com",
         "123 Market St, San Francisco",
-        "linkedin.com/in/janecooper",
       ].join("\n"),
     );
   });
@@ -257,7 +265,7 @@ describe("click-to-edit markers", () => {
     withState({
       style: { templateId },
       images: { photo: "https://res.cloudinary.com/demo/p.png", logo: "https://res.cloudinary.com/demo/l.png" },
-      social: { github: "github.com/jane" },
+      social: { linkedin: "linkedin.com/in/jane", github: "github.com/jane" },
       footer: { legal: "Notice", customFields: [{ id: "abc", label: "Skype", value: "jane" }] },
     });
 
