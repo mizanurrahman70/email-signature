@@ -4,7 +4,7 @@ export function EditorSkeleton() {
     <div
       aria-busy="true"
       aria-label="Loading signature editor"
-      className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-studio ring-1 ring-slate-900/5 lg:h-[820px] lg:flex-row"
+      className="flex flex-col overflow-clip rounded-3xl bg-white shadow-studio ring-1 ring-slate-900/5 lg:h-[calc(100dvh-5rem)] lg:min-h-[600px] lg:flex-row"
     >
       <div className="flex gap-2 bg-brand-900 p-2 lg:w-[92px] lg:flex-col lg:px-2.5 lg:py-4">
         {Array.from({ length: 5 }, (_, index) => (

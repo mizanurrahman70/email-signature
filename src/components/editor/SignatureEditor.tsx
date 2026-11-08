@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useId, type ReactNode } from "react";
+import { use, useId, useRef, type ReactNode } from "react";
 import { browser } from "react-dom";
 import { PreviewCanvas } from "@/components/studio/PreviewCanvas";
 import { StepPanel } from "@/components/studio/StepPanel";
@@ -18,6 +18,8 @@ import { TemplatePicker } from "./TemplatePicker";
 
 const STEP_IDS = EDITOR_STEPS.map((step) => step.id);
 const INSTALL_SECTION_ID = "install";
+/** Height of the sticky site header (h-14); sticky studio parts sit just below it. */
+const STICKY_HEADER_HEIGHT = 56;
 
 const STEP_CONTENT: Record<EditorStepId, ReactNode> = {
   template: <TemplatePicker />,
@@ -48,8 +50,18 @@ function Studio() {
   const { actions } = useSignature();
   const steps = useStepNavigation(STEP_IDS);
   const baseId = useId();
+  const studioRef = useRef<HTMLDivElement>(null);
   const getTabId = (id: EditorStepId) => `${baseId}-tab-${id}`;
   const getPanelId = (id: EditorStepId) => `${baseId}-panel-${id}`;
+
+  /** Changes step; if the studio is partly scrolled out of view, brings it back into view. */
+  function goToStep(change: () => void) {
+    change();
+    const studio = studioRef.current;
+    if (studio && studio.getBoundingClientRect().top < STICKY_HEADER_HEIGHT) {
+      studio.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 
   function handleReset() {
     if (window.confirm(RESET_CONFIRMATION)) actions.reset();
@@ -60,16 +72,24 @@ function Studio() {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-studio ring-1 ring-slate-900/5 lg:h-[820px] lg:flex-row">
-      <StepRail activeId={steps.activeId} onSelect={steps.setActiveId} getTabId={getTabId} getPanelId={getPanelId} />
+    <div
+      ref={studioRef}
+      className="flex scroll-mt-20 flex-col overflow-clip rounded-3xl bg-white shadow-studio ring-1 ring-slate-900/5 lg:h-[calc(100dvh-5rem)] lg:min-h-[600px] lg:flex-row"
+    >
+      <StepRail
+        activeId={steps.activeId}
+        onSelect={(id) => goToStep(() => steps.setActiveId(id))}
+        getTabId={getTabId}
+        getPanelId={getPanelId}
+      />
       <StepPanel
         stepIndex={steps.activeIndex}
         tabId={getTabId(steps.activeId)}
         panelId={getPanelId(steps.activeId)}
         isFirst={steps.isFirst}
         isLast={steps.isLast}
-        onBack={steps.back}
-        onNext={steps.next}
+        onBack={() => goToStep(steps.back)}
+        onNext={() => goToStep(steps.next)}
         onFinish={handleFinish}
         onReset={handleReset}
       >

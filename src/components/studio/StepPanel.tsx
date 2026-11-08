@@ -54,9 +54,11 @@ export function StepPanel({
         </Button>
       </header>
 
-      <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 py-6">{children}</div>
+      <div key={panelId} className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 py-6 [scrollbar-gutter:stable]">
+        {children}
+      </div>
 
-      <footer className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+      <footer className="sticky bottom-0 z-10 flex items-center justify-between gap-3 border-t border-slate-100 bg-white/95 px-6 py-4 backdrop-blur">
         <Button variant="ghost" size="sm" onClick={onBack} disabled={isFirst}>
           <ChevronLeft />
           Back

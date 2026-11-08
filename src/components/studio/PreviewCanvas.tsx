@@ -33,7 +33,10 @@ export function PreviewCanvas() {
   const deviceWidth = PREVIEW_DEVICES.find((option) => option.id === device)?.width ?? PREVIEW_DEVICES[0].width;
 
   return (
-    <section aria-label="Live preview" className="flex min-h-0 min-w-0 flex-1 flex-col bg-slate-50">
+    <section
+      aria-label="Live preview"
+      className="flex min-h-0 min-w-0 flex-1 flex-col bg-slate-50"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 bg-white/70 px-5 py-3 backdrop-blur">
         <div className="flex items-center gap-2.5">
           <span className="relative flex size-2">
