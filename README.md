@@ -60,7 +60,7 @@ src/
 └── lib/signature/          # Domain logic
     ├── view-model.ts       #   sanitize + normalize input
     ├── render.ts  copy.ts  reducer.ts  schema.ts
-    └── templates/          #   classic, stacked, split, centered, reversed, minimal + shared parts
+    └── templates/          #   10 layouts (classic … corporate) + shared parts
 ```
 
 **Rules of thumb:** components render and call functions; data lives in `constants/`; types in `types/`; reusable logic in `utils/` (pure) or `services/` (network/server). Everything imports with `@/…`, and there are no barrel `index.ts` files, so the bundler only pulls in what's used.
@@ -82,6 +82,10 @@ src/
 | Centered | Everything centered under a round photo |
 | Reversed | Details with icons on the left; photo and logo on the right |
 | Minimal | Text only, no images |
+| Banner | Name, photo and title on an accent bar; contacts with icons below |
+| Compact | Small photo and two tight lines, made for replies |
+| Boxed | Bordered card with an accent edge; socials and logo along the bottom |
+| Corporate | Logo first (photo if no logo), details beside an accent divider |
 
 To add one: write a `render…Template(vm)` in `lib/signature/templates/`, then register it in `TEMPLATE_IDS` / `TEMPLATE_OPTIONS` (constants), `TEMPLATE_RENDERERS` (render.ts) and `THUMBNAILS` (TemplateThumbnail.tsx).
 

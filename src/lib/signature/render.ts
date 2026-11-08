@@ -1,6 +1,10 @@
 import type { RenderOptions, SignatureState, SignatureViewModel, TemplateId } from "@/types/signature";
+import { renderBannerTemplate } from "./templates/banner";
+import { renderBoxedTemplate } from "./templates/boxed";
 import { renderCenteredTemplate } from "./templates/centered";
 import { renderClassicTemplate } from "./templates/classic";
+import { renderCompactTemplate } from "./templates/compact";
+import { renderCorporateTemplate } from "./templates/corporate";
 import { renderMinimalTemplate } from "./templates/minimal";
 import { renderReversedTemplate } from "./templates/reversed";
 import { renderSplitTemplate } from "./templates/split";
@@ -14,6 +18,10 @@ const TEMPLATE_RENDERERS: Record<TemplateId, (vm: SignatureViewModel) => string>
   centered: renderCenteredTemplate,
   reversed: renderReversedTemplate,
   minimal: renderMinimalTemplate,
+  banner: renderBannerTemplate,
+  compact: renderCompactTemplate,
+  boxed: renderBoxedTemplate,
+  corporate: renderCorporateTemplate,
 };
 
 /** Email-client-ready HTML. The live preview renders this exact string. */

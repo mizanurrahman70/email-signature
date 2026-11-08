@@ -2,7 +2,18 @@ import type { DetailField, ImageKind, SocialNetwork, TemplateId } from "@/types/
 import { formatMegabytes } from "@/utils/file";
 import { MAX_UPLOAD_BYTES } from "./cloudinary";
 
-export const TEMPLATE_IDS = ["classic", "stacked", "split", "centered", "reversed", "minimal"] as const;
+export const TEMPLATE_IDS = [
+  "classic",
+  "stacked",
+  "split",
+  "centered",
+  "reversed",
+  "minimal",
+  "banner",
+  "compact",
+  "boxed",
+  "corporate",
+] as const;
 export const CONTACT_ICON_NAMES = ["phone", "email", "website", "address"] as const;
 export const SOCIAL_NETWORKS = ["linkedin", "x", "facebook", "instagram", "youtube", "github"] as const;
 export const IMAGE_KINDS = ["photo", "logo"] as const;
@@ -44,6 +55,10 @@ export const TEMPLATE_OPTIONS: ReadonlyArray<{
   { id: "centered", name: "Centered", description: "Everything centered under a round photo." },
   { id: "reversed", name: "Reversed", description: "Details with icons on the left, photo on the right." },
   { id: "minimal", name: "Minimal", description: "Text only. Light and fast to load." },
+  { id: "banner", name: "Banner", description: "Name and photo on an accent bar, contacts below." },
+  { id: "compact", name: "Compact", description: "Small photo, two tidy lines. Great for replies." },
+  { id: "boxed", name: "Boxed", description: "A bordered card with an accent edge." },
+  { id: "corporate", name: "Corporate", description: "Logo first, then your details beside a divider." },
 ];
 
 export const DETAIL_GROUPS = [

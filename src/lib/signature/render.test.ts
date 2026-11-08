@@ -57,6 +57,27 @@ describe("renderSignatureHtml", () => {
     expect(html).toContain('src="https://signatures.example.com/api/icons/email?color=be123c"');
   });
 
+  it("puts the name on an accent-colored bar in banner", () => {
+    const html = renderSignatureHtml(withState({ style: { templateId: "banner", primaryColor: "#276f66" } }), OPTIONS);
+    expect(html).toContain('bgcolor="#276f66"');
+    expect(html).toMatch(/color:#ffffff">Jane Cooper/);
+  });
+
+  it("leads with the logo in corporate, falling back to the photo", () => {
+    const withLogo = renderSignatureHtml(
+      withState({ style: { templateId: "corporate" }, images: { logo: "https://x.com/l.png", photo: "https://x.com/p.png" } }),
+      OPTIONS,
+    );
+    const photoOnly = renderSignatureHtml(
+      withState({ style: { templateId: "corporate" }, images: { photo: "https://x.com/p.png" } }),
+      OPTIONS,
+    );
+
+    expect(withLogo).toContain("https://x.com/l.png");
+    expect(withLogo).not.toContain("https://x.com/p.png");
+    expect(photoOnly).toContain("https://x.com/p.png");
+  });
+
   it("renders minimal without any images", () => {
     const html = renderSignatureHtml(
       withState({ style: { templateId: "minimal" }, images: { photo: "https://x.com/p.png", logo: "https://x.com/l.png" } }),

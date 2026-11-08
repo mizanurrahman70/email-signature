@@ -112,6 +112,68 @@ const LAYOUTS: Record<TemplateId, ReactNode> = {
       </Row>
     </Stack>
   ),
+  banner: (
+    <Stack className="w-full gap-0">
+      <Row className="gap-2 rounded-t-md bg-[var(--accent)] px-2 py-1.5">
+        <Avatar size={20} />
+        <Stack className="gap-[4px]">
+          <div className="h-[6px] w-11 rounded-full bg-white" />
+          <div className="h-[4px] w-14 rounded-full bg-white/60" />
+        </Stack>
+      </Row>
+      <Row className="items-end justify-between rounded-b-md px-2 py-1.5 ring-1 ring-slate-200">
+        <Stack className="gap-[4px]">
+          <IconLine width={30} />
+          <IconLine width={26} />
+          <SocialDots />
+        </Stack>
+        <Logo width={20} />
+      </Row>
+    </Stack>
+  ),
+  compact: (
+    <Row className="w-full items-start gap-2">
+      <Avatar size={18} />
+      <Stack>
+        <Row className="gap-1.5">
+          <NameBar width={30} />
+          <Line width={36} />
+        </Row>
+        <Line width={84} />
+        <SocialDots />
+      </Stack>
+    </Row>
+  ),
+  boxed: (
+    <Stack className="w-full gap-1.5 rounded-md border-l-[3px] border-[var(--accent)] px-2 py-1.5 ring-1 ring-slate-200">
+      <Row className="gap-2">
+        <Avatar size={24} />
+        <Stack className="gap-[4px]">
+          <NameBar width={36} />
+          <Line width={30} />
+          <IconLine width={28} />
+        </Stack>
+      </Row>
+      <Row className="justify-between border-t border-slate-200 pt-1">
+        <SocialDots />
+        <Logo width={18} />
+      </Row>
+    </Stack>
+  ),
+  corporate: (
+    <Row>
+      <div className="flex h-7 w-11 shrink-0 items-center justify-center rounded bg-slate-100 ring-1 ring-slate-900/5">
+        <ImageIcon className="size-3 text-slate-300" strokeWidth={2.5} />
+      </div>
+      <Stack className="border-l-2 border-[var(--accent)] pl-2.5">
+        <NameBar width={42} />
+        <Line width={36} />
+        <Gap />
+        <Line width={52} />
+        <SocialDots />
+      </Stack>
+    </Row>
+  ),
 };
 
 function Row({ children, className }: { children: ReactNode; className?: string }) {

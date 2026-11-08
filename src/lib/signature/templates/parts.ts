@@ -27,6 +27,11 @@ export function centerBlock(html: string): string {
   return html ? renderTable(`<tr><td>${html}</td></tr>`, {}, 'align="center"') : "";
 }
 
+/** Right-aligns block content (e.g. a logo); `text-align` doesn't move block images. */
+export function alignRight(html: string): string {
+  return html ? renderTable(`<tr><td>${html}</td></tr>`, {}, 'align="right"') : "";
+}
+
 export function verticalDivider(width: number, color = BORDER_COLOR): string {
   return `${width}px solid ${color}`;
 }
@@ -70,12 +75,17 @@ interface NameOptions {
   fontSize?: number;
   color?: string;
   showPronouns?: boolean;
+  /** Pronoun color; override on colored backgrounds where muted gray is unreadable. */
+  pronounsColor?: string;
 }
 
-export function renderName(vm: SignatureViewModel, { fontSize = 18, color, showPronouns = true }: NameOptions = {}): string {
+export function renderName(
+  vm: SignatureViewModel,
+  { fontSize = 18, color, showPronouns = true, pronounsColor }: NameOptions = {},
+): string {
   const pronouns =
     showPronouns && vm.pronouns
-      ? ` <span style="${toInlineStyle({ fontSize: "12px", fontWeight: "normal", color: vm.mutedColor })}">(${vm.pronouns})</span>`
+      ? ` <span style="${toInlineStyle({ fontSize: "12px", fontWeight: "normal", color: pronounsColor ?? vm.mutedColor })}">(${vm.pronouns})</span>`
       : "";
   return renderText(vm.name && `${vm.name}${pronouns}`, {
     fontSize: `${fontSize}px`,
