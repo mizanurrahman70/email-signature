@@ -21,7 +21,7 @@ const BORDER_COLOR = "#e5e7eb";
 
 /** A bordered card with a thick accent edge; socials and logo share the bottom row. */
 export function renderBoxedTemplate(vm: SignatureViewModel): string {
-  const photo = renderPhoto(vm, PHOTO_SIZE);
+  const photo = renderPhoto(vm, PHOTO_SIZE, "square");
   const photoCell = photo ? `<td style="${toInlineStyle({ verticalAlign: "top", paddingRight: "16px" })}">${photo}</td>` : "";
   const details = joinHtml([
     renderName(vm, { color: vm.primaryColor }),

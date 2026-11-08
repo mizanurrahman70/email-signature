@@ -93,7 +93,7 @@ const LAYOUTS: Record<TemplateId, ReactNode> = {
         <SocialDots />
       </Stack>
       <Stack className="items-center border-l-2 border-[var(--accent)] pl-2.5">
-        <Avatar size={30} />
+        <Avatar size={30} square />
         <Logo width={26} />
       </Stack>
     </Row>
@@ -133,7 +133,7 @@ const LAYOUTS: Record<TemplateId, ReactNode> = {
   ),
   compact: (
     <Row className="w-full items-start gap-2">
-      <Avatar size={18} />
+      <Avatar size={18} square />
       <Stack>
         <Row className="gap-1.5">
           <NameBar width={30} />
@@ -147,7 +147,7 @@ const LAYOUTS: Record<TemplateId, ReactNode> = {
   boxed: (
     <Stack className="w-full gap-1.5 rounded-md border-l-[3px] border-[var(--accent)] px-2 py-1.5 ring-1 ring-slate-200">
       <Row className="gap-2">
-        <Avatar size={24} />
+        <Avatar size={24} square />
         <Stack className="gap-[4px]">
           <NameBar width={36} />
           <Line width={30} />
@@ -189,10 +189,13 @@ function Gap() {
 }
 
 /** Circular photo placeholder with a person silhouette. */
-function Avatar({ size }: { size: number }) {
+function Avatar({ size, square = false }: { size: number; square?: boolean }) {
   return (
     <div
-      className="flex shrink-0 items-end justify-center overflow-hidden rounded-full bg-gradient-to-b from-slate-100 to-slate-200 ring-1 ring-slate-900/5"
+      className={cn(
+        "flex shrink-0 items-end justify-center overflow-hidden bg-gradient-to-b from-slate-100 to-slate-200 ring-1 ring-slate-900/5",
+        square ? "rounded-none" : "rounded-full",
+      )}
       style={{ width: size, height: size }}
     >
       <svg viewBox="0 0 24 24" className="w-[78%] text-slate-300" fill="currentColor">

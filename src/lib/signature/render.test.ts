@@ -326,3 +326,25 @@ describe("signature width", () => {
     expect(parseSignatureState(JSON.stringify({ ...DEFAULT_SIGNATURE, style: styleWithoutWidth })).style.width).toBeNull();
   });
 });
+
+describe("photo shape", () => {
+  const photo = "https://res.cloudinary.com/demo/image/upload/c_fill,g_face,w_192,h_192,r_max,f_png,q_auto/v1/email-signatures/me.png";
+
+  it.each(["reversed", "compact", "boxed"] as const)("shows a sharp square photo in %s", (templateId) => {
+    const html = renderSignatureHtml(withState({ style: { templateId }, images: { photo } }), OPTIONS);
+    expect(html).toContain("c_fill,g_face,w_192,h_192,f_png,q_auto/v1/email-signatures/me.png");
+    expect(html).not.toContain("r_max");
+    expect(html).not.toMatch(/me\.png"[^>]*border-radius/);
+  });
+
+  it.each(["classic", "split", "centered", "banner"] as const)("keeps the round photo in %s", (templateId) => {
+    const html = renderSignatureHtml(withState({ style: { templateId }, images: { photo } }), OPTIONS);
+    expect(html).toContain("r_max");
+    expect(html).toMatch(/me\.png"[^>]*border-radius/);
+  });
+
+  it("uses the square placeholder in square templates", () => {
+    const html = renderSignatureHtml(withState({ style: { templateId: "boxed" } }), { ...OPTIONS, showPlaceholders: true });
+    expect(html).toContain("/placeholders/photo-square.png");
+  });
+});

@@ -30,7 +30,7 @@ export function renderReversedTemplate(vm: SignatureViewModel): string {
   ]);
   const detailsCell = `<td style="${toInlineStyle({ verticalAlign: "top", paddingRight: "20px" })}">${details}</td>`;
 
-  const photo = renderPhoto(vm, PHOTO_SIZE);
+  const photo = renderPhoto(vm, PHOTO_SIZE, "square");
   const logo = renderLogo(vm, LOGO_WIDTH);
   const media = joinHtml([photo, photo && logo && renderSpacer(12), logo]);
   const mediaCell = media

@@ -1,6 +1,12 @@
-import { CONTACT_ICON_SIZE, SOCIAL_ICON_SIZE } from "@/constants/signature-options";
+import {
+  CONTACT_ICON_SIZE,
+  PLACEHOLDER_IMAGES,
+  SOCIAL_ICON_SIZE,
+  SQUARE_PHOTO_PLACEHOLDER,
+} from "@/constants/signature-options";
 import { EDIT_ATTR, type EditTarget } from "@/lib/signature/edit-targets";
 import type { ContactLine, SignatureViewModel } from "@/types/signature";
+import { toSquarePhotoUrl } from "@/utils/cloudinary";
 import { escapeHtml, joinHtml, toInlineStyle, type InlineStyle } from "@/utils/html";
 
 /**
@@ -71,8 +77,15 @@ export function renderImage(src: string, alt: string, width: number, height?: nu
   return `<img src="${escapeHtml(src)}" alt="${alt}" width="${width}"${heightAttr} style="${style}"${attributes} />`;
 }
 
-export function renderPhoto(vm: SignatureViewModel, size: number): string {
-  return vm.photoUrl ? renderImage(vm.photoUrl, vm.name, size, size, size / 2, editAttr(vm, "images:photo")) : "";
+/** The profile photo: round by default, or a sharp square for templates that want one. */
+export function renderPhoto(vm: SignatureViewModel, size: number, shape: "round" | "square" = "round"): string {
+  if (!vm.photoUrl) return "";
+  if (shape === "round") return renderImage(vm.photoUrl, vm.name, size, size, size / 2, editAttr(vm, "images:photo"));
+
+  const src = vm.photoUrl.endsWith(PLACEHOLDER_IMAGES.photo)
+    ? vm.photoUrl.replace(PLACEHOLDER_IMAGES.photo, SQUARE_PHOTO_PLACEHOLDER)
+    : toSquarePhotoUrl(vm.photoUrl);
+  return renderImage(src, vm.name, size, size, 0, editAttr(vm, "images:photo"));
 }
 
 export function renderLogo(vm: SignatureViewModel, width: number): string {

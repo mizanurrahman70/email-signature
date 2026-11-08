@@ -29,3 +29,12 @@ export function serializeParamsToSign(params: Record<string, string | number>): 
     .map((key) => `${key}=${params[key]}`)
     .join("&");
 }
+
+/**
+ * Square version of a photo URL. Uploaded photos are rounded inside the image
+ * (Cloudinary `r_max`, because Outlook ignores CSS border-radius), so square
+ * templates drop that step. Other URLs are returned unchanged.
+ */
+export function toSquarePhotoUrl(url: string): string {
+  return url.replace(/(\/image\/upload\/[^/]*?)(?:,r_max|r_max,)/, "$1");
+}

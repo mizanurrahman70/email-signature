@@ -17,7 +17,7 @@ const PHOTO_SIZE = 44;
 
 /** A small photo beside two tight lines: name and title, then contacts. Made for replies. */
 export function renderCompactTemplate(vm: SignatureViewModel): string {
-  const photo = renderPhoto(vm, PHOTO_SIZE);
+  const photo = renderPhoto(vm, PHOTO_SIZE, "square");
   const photoCell = photo ? `<td style="${toInlineStyle({ verticalAlign: "top", paddingRight: "12px" })}">${photo}</td>` : "";
 
   const titleLine = renderTitleLine(vm, " &middot; ");

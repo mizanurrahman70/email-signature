@@ -58,6 +58,8 @@ export const EDITABLE_PREVIEW_GUTTER = 6;
 /** Hover outline for click-to-edit parts (`data-edit`) in the preview only. */
 const EDITABLE_PREVIEW_CSS = [
   `body{cursor:pointer;padding:${EDITABLE_PREVIEW_GUTTER}px}`,
-  "[data-edit]{cursor:pointer;border-radius:4px;outline:2px solid transparent;outline-offset:2px;transition:outline-color .15s,background-color .15s}",
+  "[data-edit]{cursor:pointer;outline:2px solid transparent;outline-offset:2px;transition:outline-color .15s,background-color .15s}",
+  // Images keep their own shape (round or square photo); only text gets soft corners.
+  "[data-edit]:not(img){border-radius:4px}",
   "[data-edit]:hover{outline-color:rgba(54,138,126,.55);background-color:rgba(54,138,126,.07)}",
 ].join("");

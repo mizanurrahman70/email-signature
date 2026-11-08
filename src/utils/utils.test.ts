@@ -128,3 +128,20 @@ describe("fonts", async () => {
     expect(getPrimaryFontFamily("Arial")).toBe("Arial");
   });
 });
+
+describe("toSquarePhotoUrl", async () => {
+  const { toSquarePhotoUrl } = await import("./cloudinary");
+
+  it("drops Cloudinary rounding wherever it sits in the transformation", () => {
+    expect(toSquarePhotoUrl("https://res.cloudinary.com/d/image/upload/c_fill,r_max,f_png/v1/a.png")).toBe(
+      "https://res.cloudinary.com/d/image/upload/c_fill,f_png/v1/a.png",
+    );
+    expect(toSquarePhotoUrl("https://res.cloudinary.com/d/image/upload/r_max,f_png/v1/a.png")).toBe(
+      "https://res.cloudinary.com/d/image/upload/f_png/v1/a.png",
+    );
+  });
+
+  it("leaves other URLs alone", () => {
+    expect(toSquarePhotoUrl("https://example.com/me.png")).toBe("https://example.com/me.png");
+  });
+});

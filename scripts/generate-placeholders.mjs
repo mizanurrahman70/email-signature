@@ -31,6 +31,13 @@ const PLACEHOLDERS = [
     body: `<circle cx="96" cy="96" r="96" fill="${BACKGROUND}"/>${imageGlyph(52, 52, 88)}`,
   },
   {
+    // For templates that show the photo as a square.
+    name: "photo-square",
+    width: 192,
+    height: 192,
+    body: `<rect width="192" height="192" fill="${BACKGROUND}"/>${imageGlyph(52, 52, 88)}`,
+  },
+  {
     name: "logo",
     width: 280,
     height: 80,
