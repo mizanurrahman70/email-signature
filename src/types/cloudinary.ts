@@ -12,6 +12,8 @@ export interface SignedUploadParams {
   signature: string;
   folder: string;
   allowedFormats: string;
+  /** Incoming transformation Cloudinary applies before storing. */
+  transformation: string;
 }
 
 export interface CloudinaryUploadResponse {

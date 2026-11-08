@@ -1,6 +1,6 @@
 import type { DetailField, ImageKind, SocialNetwork, TemplateId } from "@/types/signature";
 import { formatMegabytes } from "@/utils/file";
-import { MAX_UPLOAD_BYTES } from "./cloudinary";
+import { MAX_SOURCE_BYTES } from "./cloudinary";
 
 export const TEMPLATE_IDS = [
   "classic",
@@ -119,8 +119,8 @@ export const SOCIAL_OPTIONS: ReadonlyArray<{
 export const TEXT_COLOR_PRESETS = ["#111827", "#1f2937", "#374151", "#4b5563"] as const;
 
 export const IMAGE_FIELDS: ReadonlyArray<{ kind: ImageKind; label: string; hint: string; allowHandwriting?: boolean }> = [
-  { kind: "photo", label: "Profile photo", hint: "Square images work best. Cropped to a circle around your face." },
-  { kind: "logo", label: "Signature", hint: `Your handwritten signature or a logo. A PNG with a transparent background looks best. Max ${formatMegabytes(MAX_UPLOAD_BYTES)}.`, allowHandwriting: true },
+  { kind: "photo", label: "Profile photo", hint: `Square images work best. Max ${formatMegabytes(MAX_SOURCE_BYTES)}; we optimize it for you.` },
+  { kind: "logo", label: "Signature", hint: `Your handwritten signature or a logo. A PNG with a transparent background looks best. Max ${formatMegabytes(MAX_SOURCE_BYTES)}; we optimize it for you.`, allowHandwriting: true },
 ];
 
 /** Contact icons are rendered on demand in the accent color by /api/icons/[name]. */

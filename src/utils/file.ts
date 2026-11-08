@@ -1,7 +1,13 @@
+const BYTES_PER_KILOBYTE = 1024;
 const BYTES_PER_MEGABYTE = 1024 * 1024;
 
 export function formatMegabytes(bytes: number): string {
   return `${Math.round((bytes / BYTES_PER_MEGABYTE) * 10) / 10} MB`;
+}
+
+/** "62 KB" below 1 MB, otherwise "3.4 MB". */
+export function formatBytes(bytes: number): string {
+  return bytes < BYTES_PER_MEGABYTE ? `${Math.max(1, Math.round(bytes / BYTES_PER_KILOBYTE))} KB` : formatMegabytes(bytes);
 }
 
 interface FileRules {

@@ -9,6 +9,7 @@ import { ACCEPTED_IMAGE_TYPES } from "@/constants/cloudinary";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import type { ImageKind } from "@/types/signature";
 import { cn } from "@/utils/cn";
+import { formatBytes } from "@/utils/file";
 import { HandwritingModal } from "./handwriting/HandwritingModal";
 import { useSignature } from "./SignatureContext";
 
@@ -28,7 +29,7 @@ export function ImageUploadField({ kind, label, hint, allowHandwriting = false }
   const [isDragging, setIsDragging] = useState(false);
   const [isHandwritingOpen, setIsHandwritingOpen] = useState(false);
   const imageUrl = state.images[kind];
-  const { upload, isPending, error } = useImageUpload(kind, (url) => actions.setImage(kind, url));
+  const { upload, isPending, stage, saving, error } = useImageUpload(kind, (url) => actions.setImage(kind, url));
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -86,7 +87,7 @@ export function ImageUploadField({ kind, label, hint, allowHandwriting = false }
               data-edit-target={`images:${kind}`}
             >
               <ImageUp />
-              {isPending ? "Uploading…" : imageUrl ? "Replace" : "Upload"}
+              {stage === "optimizing" ? "Optimizing…" : isPending ? "Uploading…" : imageUrl ? "Replace" : "Upload"}
             </Button>
             {imageUrl && (
               <Button variant="ghost" size="sm" onClick={() => actions.setImage(kind, "")} disabled={isPending}>
@@ -121,6 +122,12 @@ export function ImageUploadField({ kind, label, hint, allowHandwriting = false }
             onApply={handleHandwritingApply}
           />
         </>
+      )}
+
+      {saving && saving.uploadedBytes < saving.originalBytes && (
+        <p className="text-xs text-brand-700">
+          Optimized {formatBytes(saving.originalBytes)} → {formatBytes(saving.uploadedBytes)} before upload.
+        </p>
       )}
 
       {error && (

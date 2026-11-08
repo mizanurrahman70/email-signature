@@ -14,6 +14,7 @@ export function buildUploadFormData(file: File, params: SignedUploadParams): For
   body.append("signature", params.signature);
   body.append("folder", params.folder);
   body.append("allowed_formats", params.allowedFormats);
+  body.append("transformation", params.transformation);
   return body;
 }
 

@@ -12,11 +12,14 @@ describe("createSignedUploadParams", () => {
 
     const params = createSignedUploadParams({ cloudName: "demo", apiKey: "key", apiSecret: "secret" });
     const expected = createHash("sha1")
-      .update(`allowed_formats=${params.allowedFormats}&folder=${params.folder}&timestamp=${params.timestamp}secret`)
+      .update(
+        `allowed_formats=${params.allowedFormats}&folder=${params.folder}&timestamp=${params.timestamp}&transformation=${params.transformation}secret`,
+      )
       .digest("hex");
 
     expect(params.timestamp).toBe(1767225600);
     expect(params.signature).toBe(expected);
+    expect(params.transformation).toBe("c_limit,w_1200,h_1200");
     expect(params).not.toHaveProperty("apiSecret");
 
     vi.useRealTimers();

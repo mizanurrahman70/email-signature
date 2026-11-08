@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
-import { ALLOWED_FORMATS, UPLOAD_FOLDER } from "@/constants/cloudinary";
+import { ALLOWED_FORMATS, UPLOAD_FOLDER, UPLOAD_INCOMING_TRANSFORM } from "@/constants/cloudinary";
 import type { CloudinaryCredentials, SignedUploadParams } from "@/types/cloudinary";
 import { serializeParamsToSign } from "@/utils/cloudinary";
 
@@ -18,7 +18,8 @@ export function getCloudinaryCredentials(): CloudinaryCredentials | null {
  * Signs a direct browser-to-Cloudinary upload. The file never passes through
  * our server, and the API secret never reaches the browser. Signing the
  * folder and formats stops clients from uploading elsewhere or uploading
- * non-images with this signature.
+ * non-images with this signature; the signed incoming transformation caps the
+ * stored size even if a client skips the browser-side compression.
  */
 export function createSignedUploadParams(credentials: CloudinaryCredentials): SignedUploadParams {
   const timestamp = Math.floor(Date.now() / 1000);
@@ -26,6 +27,7 @@ export function createSignedUploadParams(credentials: CloudinaryCredentials): Si
     allowed_formats: ALLOWED_FORMATS,
     folder: UPLOAD_FOLDER,
     timestamp,
+    transformation: UPLOAD_INCOMING_TRANSFORM,
   };
 
   return {
@@ -35,6 +37,7 @@ export function createSignedUploadParams(credentials: CloudinaryCredentials): Si
     signature: sha1(serializeParamsToSign(paramsToSign) + credentials.apiSecret),
     folder: UPLOAD_FOLDER,
     allowedFormats: ALLOWED_FORMATS,
+    transformation: UPLOAD_INCOMING_TRANSFORM,
   };
 }
 

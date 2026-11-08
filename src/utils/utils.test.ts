@@ -145,3 +145,13 @@ describe("toSquarePhotoUrl", async () => {
     expect(toSquarePhotoUrl("https://example.com/me.png")).toBe("https://example.com/me.png");
   });
 });
+
+describe("formatBytes", async () => {
+  const { formatBytes } = await import("./file");
+
+  it("uses KB below 1 MB and MB above", () => {
+    expect(formatBytes(63_500)).toBe("62 KB");
+    expect(formatBytes(200)).toBe("1 KB");
+    expect(formatBytes(3.4 * 1024 * 1024)).toBe("3.4 MB");
+  });
+});
